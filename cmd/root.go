@@ -10,7 +10,7 @@ import (
 	"github.com/deislabs/cnab-go/bundle"
 	"github.com/spf13/cobra"
 
-	"github.com/simongdavies/atfcnab/pkg/template"
+	"github.com/endjin/CNAB.ARM-Converter/pkg/template"
 )
 
 const (
