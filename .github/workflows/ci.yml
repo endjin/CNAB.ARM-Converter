@@ -11,8 +11,5 @@ jobs:
     - uses: actions/setup-go@v1
       with:
         go-version: '1.10.x'
-    - name: Move files to GOPATH
-      run: mv $GITHUB_WORKSPACE $GOPATH/src/github.com/$GITHUB_REPOSITORY
     - name: Bootstrap & build
       run: make bootstrap build
-      working-directory: $GOPATH/src/github.com/$GITHUB_REPOSITORY
