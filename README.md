@@ -2,8 +2,6 @@
 
 Generates an ARM template from a CNAB bundle.json. Uses [duffle-aci-docker](https://github.com/simongdavies/silver-garbanzo/tree/master/client/duffle-aci-docker) container image to run the bundle in Azure ACI.
 
-[![Build Status](https://simondavies.visualstudio.com/atfcnab/_apis/build/status/simongdavies.atfcnab?branchName=master)](https://simondavies.visualstudio.com/atfcnab/_build/latest?definitionId=22&branchName=master)
-
 ## Usage
 
 ```shell
