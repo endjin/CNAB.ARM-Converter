@@ -17,7 +17,9 @@ jobs:
       with:
         go-version: '1.10.x'
     - name: Move project to GO workspace
-      run: mv $GITHUB_WORKSPACE $GOPATH/src/github.com/$GITHUB_REPOSITORY
+      run: |
+        mkdir -p $GOPATH/src/github.com/$GITHUB_REPOSITORY
+        mv $GITHUB_WORKSPACE $GOPATH/src/github.com/$GITHUB_REPOSITORY
     - name: Echo environment variables
       run: 'gci Env:'
       shell: pwsh
