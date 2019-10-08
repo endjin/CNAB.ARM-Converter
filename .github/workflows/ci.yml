@@ -26,4 +26,5 @@ jobs:
     - name: Bootstrap & build
       run: |
         cd $GOPROJECT
+        ls
         make bootstrap build
