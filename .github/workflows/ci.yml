@@ -8,13 +8,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - uses: actions/setup-go@v1.1.1
+    - name: Set GO environment variables
+      run: |
+        echo ::set-env name=GOPATH::$RUNNER_WORKSPACE/go 
+        echo ::set-env name=GOBIN::$RUNNER_WORKSPACE/go/bin
+    - name: Setup GO
+      uses: actions/setup-go@v1
       with:
         go-version: '1.10.x'
+    - name: Move project to GO workspace
+      run: mv $GITHUB_WORKSPACE $GOPATH/src/github.com/$GITHUB_REPOSITORY
     - name: Echo environment variables
       run: 'gci Env:'
       shell: pwsh
     - name: Bootstrap & build
-      run: |
-        GOBIN=$PWD/bin
-        make bootstrap build
+      run: make bootstrap build
