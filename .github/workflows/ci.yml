@@ -11,10 +11,13 @@ jobs:
     - run: |
         git fetch --tags
         git branch --create-reflog master origin/master
-    - name: 'Set GitVersion environment variable'
+    - name: Set GitVersion file
       uses: docker://gittools/gitversion:5.0.2-linux
       with:
-        args: '-nocache -output buildserver -exec /bin/bash -execargs "-c \"echo ::set-env name=GitVersion_FullSemVer::$GitVersion_FullSemVer\""'
+        args: '-nocache -output buildserver -exec /bin/bash -execargs "-c \"echo $GitVersion_FullSemVer > /github/workspace/version.txt\""'
+    - name: Set GitVersion environment variable
+      run: |
+        echo ::set-env name=GitVersion_FullSemVer::$(cat version.txt)
     - name: Set GO environment variables
       run: |
         GOPATH=$RUNNER_WORKSPACE/go
