@@ -26,5 +26,5 @@ jobs:
     - name: Bootstrap & build
       run: |
         cd $GOPROJECT
-        ls
+        mkdir -p $GOBIN
         make bootstrap build
