@@ -9,7 +9,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Set Git Version
-      uses: docker://gittools/gitversion::latest-linux-netcoreapp2.1
+      uses: docker://gittools/gitversion:latest-linux-netcoreapp2.1
       with:
         args: /github/workspace /nofetch /exec /bin/sh /execargs "-c echo ::set-env name=GitVersion_FullSemVer::$GitVersion_FullSemVer"
     - name: Set GO environment variables
