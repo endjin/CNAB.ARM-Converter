@@ -11,6 +11,9 @@ jobs:
     - uses: actions/setup-go@v1.1.1
       with:
         go-version: '1.10.x'
+    - name: Echo environment variables
+      run: 'gci Env:'
+      shell: pwsh
     - name: Bootstrap & build
       run: |
         GOBIN=$PWD/bin
