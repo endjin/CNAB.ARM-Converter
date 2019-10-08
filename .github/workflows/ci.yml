@@ -8,10 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Set Git Version
-      uses: docker://gittools/gitversion:5.0.2-beta1-27-linux-centos-7-netcoreapp2.2
+    - run: |
+        git fetch --tags
+        git branch --create-reflog master origin/master
+    - name: 'Set GitVersion environment variable'
+      uses: docker://gittools/gitversion:5.0.2-linux
       with:
-        args: /github/workspace /nofetch /exec /bin/sh /execargs "-c echo ::set-env name=GitVersion_FullSemVer::$GitVersion_FullSemVer"
+        args: '-nocache -output buildserver -exec /bin/bash -execargs "-c \"echo ::set-env name=GitVersion_FullSemVer::$GitVersion_FullSemVer\""'
     - name: Set GO environment variables
       run: |
         GOPATH=$RUNNER_WORKSPACE/go
