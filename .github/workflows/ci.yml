@@ -10,8 +10,12 @@ jobs:
     - uses: actions/checkout@master
     - name: Set GO environment variables
       run: |
-        echo ::set-env name=GOPATH::$RUNNER_WORKSPACE/go 
-        echo ::set-env name=GOBIN::$RUNNER_WORKSPACE/go/bin
+        GOPATH=$RUNNER_WORKSPACE/go
+        GOBIN=$GOPATH/bin
+        mkdir -p $GOBIN
+        echo ::set-env name=GOPATH::$GOPATH 
+        echo ::set-env name=GOBIN::$GOBIN
+        echo ::add-path::$GOBIN
     - name: Setup GO
       uses: actions/setup-go@v1
       with:
@@ -25,6 +29,5 @@ jobs:
         echo ::set-env name=GOPROJECT::$GOPROJECT
     - name: Bootstrap & build
       run: |
-        cd $GOPROJECT
-        mkdir -p $GOBIN
+        cd $GOPROJECT   
         make bootstrap build
