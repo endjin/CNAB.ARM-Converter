@@ -21,7 +21,7 @@ jobs:
         GOPROJECT=$GOPATH/src/github.com/$GITHUB_REPOSITORY
         echo "Moving $GITHUB_WORKSPACE to $GOPROJECT"
         mkdir -p $GOPROJECT
-        cp -R $GITHUB_WORKSPACE $GOPROJECT
+        cp -a $GITHUB_WORKSPACE/. $GOPROJECT
         echo ::set-env name=GOPROJECT::$GOPROJECT
     - name: Bootstrap & build
       run: |
