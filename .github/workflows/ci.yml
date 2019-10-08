@@ -17,7 +17,7 @@ jobs:
         args: '-nocache -output buildserver -exec /bin/bash -execargs "-c \"echo $GitVersion_FullSemVer > /github/workspace/version.txt\""'
     - name: Set GitVersion environment variable
       run: |
-        echo ::set-env name=GitVersion_FullSemVer::$(cat version.txt)
+        echo ::set-env name=VERSION::$(cat version.txt)
     - name: Set GO environment variables
       run: |
         GOPATH=$RUNNER_WORKSPACE/go
@@ -39,7 +39,7 @@ jobs:
         echo ::set-env name=GOPROJECT::$GOPROJECT
     - name: Bootstrap & build
       run: |
-        cd $GOPROJECT   
+        cd $GOPROJECT
         make bootstrap build-release
     - name: Upload build artifacts
       uses: actions/upload-artifact@master

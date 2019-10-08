@@ -18,8 +18,6 @@ endif
 
 GIT_TAG   := $(shell git describe --tags --always)
 VERSION   ?= ${GIT_TAG}
-# Replace + with -, for Docker image tag compliance
-IMAGE_TAG ?= $(subst +,-,$(VERSION))
 LDFLAGS   += -X main.Version=$(VERSION)
 
 
