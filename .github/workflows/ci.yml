@@ -15,7 +15,7 @@ jobs:
     - name: Setup GO
       uses: actions/setup-go@v1
       with:
-        go-version: '1.10.x'
+        go-version: '1.13.1'
     - name: Move project to GO workspace
       run: |
         mkdir -p $GOPATH/src/github.com/$GITHUB_REPOSITORY
