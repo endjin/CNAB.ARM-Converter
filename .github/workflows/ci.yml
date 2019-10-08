@@ -30,4 +30,9 @@ jobs:
     - name: Bootstrap & build
       run: |
         cd $GOPROJECT   
-        make bootstrap build
+        make bootstrap build-release
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@master
+      with:
+        name: binaries
+        path: ${{ runner.workspace }}/go/src/github.com/${{ github.repository}}/bin
