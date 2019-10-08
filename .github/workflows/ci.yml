@@ -11,7 +11,7 @@ jobs:
     - name: Dump runner context
       env:
         RUNNER_CONTEXT: ${{ toJson(runner) }}
-        run: echo "$STEPS_CONTEXT"
+      run: echo "$STEPS_CONTEXT"
     - name: Set GO environment variables
       run: |
         echo ::set-env name=GOPATH::$RUNNER_WORKSPACE/go 
