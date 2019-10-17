@@ -317,7 +317,6 @@ func (t *Template) SetContainerEnvironmentVariable(environmentVariable Environme
 						c.Properties.EnvironmentVariables = append(c.Properties.EnvironmentVariables, environmentVariable)
 						cg.Containers[i] = c
 					}
-
 				}
 			}
 		}

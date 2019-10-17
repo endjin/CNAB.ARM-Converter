@@ -1,0 +1,73 @@
+{
+    "credentials": {
+        "azure_client_id": {
+            "env": "AZURE_CLIENT_ID"
+        },
+        "azure_client_secret": {
+            "env": "AZURE_CLIENT_SECRET"
+        },
+        "azure_subscription_id": {
+            "env": "AZURE_SUBSCRIPTION_ID"
+        },
+        "azure_tenant_id": {
+            "env": "AZURE_TENANT_ID"
+        }
+    },
+    "description": "Spring Music",
+    "images": null,
+    "invocationImages": [
+        {
+            "image": "cnabquickstartstest.azurecr.io/duffle/spring-music-cnab:e8966c3c153a525775cbcddd46f778bed25650b4",
+            "imageType": "docker"
+        }
+    ],
+    "maintainers": [
+        {
+            "email": "brianisrunning@gmail.com",
+            "name": "Brian Redmond"
+        },
+        {
+            "email": "joey@gmail.com",
+            "name": "Joey Schluchter"
+        }
+    ],
+    "name": "spring-music",
+    "parameters": {
+        "aks_resource_group": {
+            "defaultValue": "spring-music-duffle",
+            "destination": {
+                "env": "AKS_RESOURCE_GROUP"
+            },
+            "type": "string"
+        },
+        "app_resource_group": {
+            "defaultValue": "spring-music-duffle",
+            "destination": {
+                "env": "APP_RESOURCE_GROUP"
+            },
+            "type": "string"
+        },
+        "cluster_name": {
+            "defaultValue": "spring-music-demo",
+            "destination": {
+                "env": "CLUSTER_NAME"
+            },
+            "type": "string"
+        },
+        "cosmosdb_location": {
+            "defaultValue": "westeurope",
+            "destination": {
+                "env": "LOCATION"
+            },
+            "type": "string"
+        },
+        "cosmosdb_service_name": {
+            "defaultValue": "springmusicduffle",
+            "destination": {
+                "env": "COSMOSDB_SERVICE_NAME"
+            },
+            "type": "string"
+        }
+    },
+    "version": "0.1.0"
+}
