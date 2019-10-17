@@ -31,4 +31,4 @@
 
 [[constraint]]
   name = "github.com/deislabs/cnab-go"
-  revision ="9028f0f800a40977c2e49a38be764978cfe82324"
+  version = "0.7.1-beta1"
