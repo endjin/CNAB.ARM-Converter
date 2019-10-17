@@ -91,6 +91,10 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 			var defaultValue interface{}
 			if definition.Default != nil {
 				defaultValue = definition.Default
+			} else {
+				if !parameter.Required {
+					defaultValue = ""
+				}
 			}
 
 			var minValue *int
@@ -156,13 +160,13 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 
 	for _, credentialKey := range credentialKeys {
 
+		credential := bundle.Credentials[credentialKey]
+
 		if strings.Contains(credentialKey, "-") {
 			return fmt.Errorf("Invalid Credential name: %s.ARM template generation requires credential names that can be used as environment variables", credentialKey)
 		}
 
 		var environmentVariable template.EnvironmentVariable
-
-		// TODO update to support description and required attributes once CNAB go is updated
 
 		// Handle TenantId and SubscriptionId as default values from ARM template functions
 		if credentialKey == "azure_subscription_id" || credentialKey == "azure_tenant_id" {
@@ -171,8 +175,22 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 				Value: fmt.Sprintf("[subscription().%sId]", strings.TrimSuffix(strings.TrimPrefix(credentialKey, "azure_"), "_id")),
 			}
 		} else {
+			var metadata template.Metadata
+			if credential.Description != "" {
+				metadata = template.Metadata{
+					Description: credential.Description,
+				}
+			}
+
+			var defaultValue interface{}
+			if !credential.Required {
+				defaultValue = ""
+			}
+
 			generatedTemplate.Parameters[credentialKey] = template.Parameter{
-				Type: "securestring",
+				Type:         "securestring",
+				Metadata:     &metadata,
+				DefaultValue: defaultValue,
 			}
 			environmentVariable = template.EnvironmentVariable{
 				Name:        strings.ToUpper(credentialKey),

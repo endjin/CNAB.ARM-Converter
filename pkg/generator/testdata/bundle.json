@@ -1,14 +1,14 @@
 {
     "credentials": {
         "password": {
-            "env": "PASSWORD",
-            "required": true
+            "description": "A secret password",
+            "env": "PASSWORD"
         }
     },
     "custom": {
         "io.cnab.dependencies": null,
         "sh.porter": {
-            "manifestDigest": "be3b073e6497d3948e635343f4ad31cfa835489bbe7dc9496de6c478d26037be"
+            "manifestDigest": "75f65a3374a09ed9b5055810107f990b35138c937dcb63e21059509908b8bd1e"
         }
     },
     "definitions": {

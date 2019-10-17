@@ -94,7 +94,11 @@
 			}
 		},
 		"password": {
-			"type": "securestring"
+			"type": "securestring",
+			"defaultValue": "",
+			"metadata": {
+				"description": "A secret password"
+			}
 		},
 		"person": {
 			"type": "string",
