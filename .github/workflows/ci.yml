@@ -37,10 +37,10 @@ jobs:
         mkdir -p $GOPROJECT
         cp -a $GITHUB_WORKSPACE/. $GOPROJECT
         echo ::set-env name=GOPROJECT::$GOPROJECT
-    - name: Bootstrap & build
+    - name: Bootstrap, test & build 
       run: |
         cd $GOPROJECT
-        make bootstrap build-release
+        make bootstrap test build-release
     - name: Upload build artifacts
       uses: actions/upload-artifact@master
       with:
