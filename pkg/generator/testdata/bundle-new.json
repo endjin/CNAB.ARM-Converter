@@ -1,0 +1,98 @@
+{
+    "credentials": {
+        "password": {
+            "env": "PASSWORD",
+            "required": true
+        }
+    },
+    "custom": {
+        "io.cnab.dependencies": null,
+        "sh.porter": {
+            "manifestDigest": "be3b073e6497d3948e635343f4ad31cfa835489bbe7dc9496de6c478d26037be"
+        }
+    },
+    "definitions": {
+        "age": {
+            "default": 29,
+            "description": "The age of the person",
+            "maximum": 150,
+            "minimum": 0,
+            "type": "integer"
+        },
+        "person": {
+            "default": "mike",
+            "description": "The name of the person to say hello to",
+            "maxLength": 20,
+            "minLength": 1,
+            "type": "string"
+        },
+        "place_of_birth": {
+            "description": "The person's place of birth",
+            "enum": [
+                "UK",
+                "USA"
+            ],
+            "type": "string"
+        },
+        "porter-debug": {
+            "default": false,
+            "description": "Print debug information from Porter when executing the bundle",
+            "type": "boolean"
+        },
+        "retirement_age": {
+            "description": "The retirement age of the person",
+            "exclusiveMaximum": 75,
+            "exclusiveMinimum": 55,
+            "type": "integer"
+        }
+    },
+    "description": "An example Porter configuration",
+    "invocationImages": [
+        {
+            "image": "cnabquickstarts.azurecr.io/porter/hello-world:1.0.0",
+            "imageType": "docker"
+        }
+    ],
+    "name": "HELLO",
+    "parameters": {
+        "age": {
+            "definition": "age",
+            "description": "The age of the person",
+            "destination": {
+                "env": "AGE"
+            }
+        },
+        "person": {
+            "definition": "person",
+            "description": "The name of the person to say hello to",
+            "destination": {
+                "env": "PERSON"
+            }
+        },
+        "place_of_birth": {
+            "definition": "place_of_birth",
+            "description": "The person's place of birth",
+            "destination": {
+                "env": "PLACE_OF_BIRTH"
+            },
+            "required": true
+        },
+        "porter-debug": {
+            "definition": "porter-debug",
+            "description": "Print debug information from Porter when executing the bundle",
+            "destination": {
+                "env": "PORTER_DEBUG"
+            }
+        },
+        "retirement_age": {
+            "definition": "retirement_age",
+            "description": "The retirement age of the person",
+            "destination": {
+                "env": "RETIREMENT_AGE"
+            },
+            "required": true
+        }
+    },
+    "schemaVersion": "v1.0.0",
+    "version": "1.0.0"
+}

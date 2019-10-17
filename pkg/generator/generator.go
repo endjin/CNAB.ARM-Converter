@@ -65,6 +65,7 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 	for _, parameterKey := range parameterKeys {
 
 		parameter := bundle.Parameters[parameterKey]
+		//definition := bundle.Definitions[parameter.Definition]
 
 		// Parameter names cannot contain - as they are converted into environment variables set on duffle ACI container
 
