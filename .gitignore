@@ -24,3 +24,5 @@ bundle.json
 !**/testdata/azuredeploy.json
 !**/testdata/bundle.json
 **/testdata/azuredeploy-generated.json
+
+.vscode

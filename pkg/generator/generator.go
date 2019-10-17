@@ -31,8 +31,6 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 		return err
 	}
 
-	// TODO need to translate new json schema based parameter format to ARM template format
-
 	generatedTemplate := template.NewTemplate()
 
 	// TODO need to fix this when duffle and porter support bundle push/install from registry
@@ -65,7 +63,7 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 	for _, parameterKey := range parameterKeys {
 
 		parameter := bundle.Parameters[parameterKey]
-		//definition := bundle.Definitions[parameter.Definition]
+		definition := bundle.Definitions[parameter.Definition]
 
 		// Parameter names cannot contain - as they are converted into environment variables set on duffle ACI container
 
@@ -75,40 +73,73 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 			continue
 		}
 
-		if strings.Contains(parameterKey, "-") {
-			return fmt.Errorf("Invalid Parameter name: %s.ARM template generation requires parameter names that can be used as environment variables", parameterKey)
-		}
-
 		// Location parameter is added to template definition automatically as ACI uses it
 		if parameterKey != "location" {
 
 			var metadata template.Metadata
-			if parameter.Metadata != nil && parameter.Metadata.Description != "" {
+			if definition.Description != "" {
 				metadata = template.Metadata{
-					Description: parameter.Metadata.Description,
+					Description: definition.Description,
 				}
 			}
 
 			var allowedValues interface{}
-			if parameter.AllowedValues != nil {
-				allowedValues = parameter.AllowedValues
+			if definition.Enum != nil {
+				allowedValues = definition.Enum
 			}
 
 			var defaultValue interface{}
-			if parameter.DefaultValue != nil {
-				defaultValue = parameter.DefaultValue
+			if definition.Default != nil {
+				defaultValue = definition.Default
+			}
+
+			var minValue *int
+			if definition.Minimum != nil {
+				minValue = definition.Minimum
+			}
+			if definition.ExclusiveMinimum != nil {
+				min := *definition.ExclusiveMinimum + 1
+				minValue = &min
+			}
+
+			var maxValue *int
+			if definition.Maximum != nil {
+				maxValue = definition.Maximum
+			}
+			if definition.ExclusiveMaximum != nil {
+				max := *definition.ExclusiveMaximum - 1
+				maxValue = &max
+			}
+
+			var minLength *int
+			if definition.MinLength != nil {
+				minLength = definition.MinLength
+			}
+
+			var maxLength *int
+			if definition.MaxLength != nil {
+				maxLength = definition.MaxLength
+			}
+
+			armType, err := toARMType(definition.Type.(string))
+			if err != nil {
+				return err
 			}
 
 			generatedTemplate.Parameters[parameterKey] = template.Parameter{
-				Type:          parameter.DataType,
+				Type:          armType,
 				AllowedValues: allowedValues,
 				DefaultValue:  defaultValue,
 				Metadata:      &metadata,
+				MinValue:      minValue,
+				MaxValue:      maxValue,
+				MinLength:     minLength,
+				MaxLength:     maxLength,
 			}
 		}
 
 		environmentVariable := template.EnvironmentVariable{
-			Name:  strings.ToUpper(parameterKey),
+			Name:  parameter.Destination.EnvironmentVariable,
 			Value: fmt.Sprintf("[parameters('%s')]", parameterKey),
 		}
 
@@ -178,6 +209,24 @@ func getBundleName(bundle *bundle.Bundle) (string, error) {
 	}
 
 	return "", fmt.Errorf("Cannot get bundle name from invocationImages: %v", bundle.InvocationImages)
+}
+
+func toARMType(jsonType string) (string, error) {
+	var armType string
+	var err error
+
+	switch jsonType {
+	case "boolean":
+		armType = "bool"
+	case "integer":
+		armType = "int"
+	case "object", "array", "string":
+		armType = jsonType
+	default:
+		err = fmt.Errorf("Unable to convert type '%s' to ARM template parameter type", jsonType)
+	}
+
+	return armType, err
 }
 
 func loadBundle(source string) (*bundle.Bundle, error) {

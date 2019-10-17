@@ -29,6 +29,10 @@ type Parameter struct {
 	DefaultValue  interface{} `json:"defaultValue,omitempty"`
 	AllowedValues interface{} `json:"allowedValues,omitempty"`
 	Metadata      *Metadata   `json:"metadata,omitempty"`
+	MinValue      *int        `json:"minValue,omitempty"`
+	MaxValue      *int        `json:"maxValue,omitempty"`
+	MinLength     *int        `json:"minLength,omitempty"`
+	MaxLength     *int        `json:"maxLength,omitempty"`
 }
 
 // Sku is defines a SKU for template resource

@@ -1,73 +1,98 @@
 {
     "credentials": {
-        "azure_client_id": {
-            "env": "AZURE_CLIENT_ID"
-        },
-        "azure_client_secret": {
-            "env": "AZURE_CLIENT_SECRET"
-        },
-        "azure_subscription_id": {
-            "env": "AZURE_SUBSCRIPTION_ID"
-        },
-        "azure_tenant_id": {
-            "env": "AZURE_TENANT_ID"
+        "password": {
+            "env": "PASSWORD",
+            "required": true
         }
     },
-    "description": "Spring Music",
-    "images": null,
+    "custom": {
+        "io.cnab.dependencies": null,
+        "sh.porter": {
+            "manifestDigest": "be3b073e6497d3948e635343f4ad31cfa835489bbe7dc9496de6c478d26037be"
+        }
+    },
+    "definitions": {
+        "age": {
+            "default": 29,
+            "description": "The age of the person",
+            "maximum": 150,
+            "minimum": 0,
+            "type": "integer"
+        },
+        "person": {
+            "default": "mike",
+            "description": "The name of the person to say hello to",
+            "maxLength": 20,
+            "minLength": 1,
+            "type": "string"
+        },
+        "place_of_birth": {
+            "description": "The person's place of birth",
+            "enum": [
+                "UK",
+                "USA"
+            ],
+            "type": "string"
+        },
+        "porter-debug": {
+            "default": false,
+            "description": "Print debug information from Porter when executing the bundle",
+            "type": "boolean"
+        },
+        "retirement_age": {
+            "description": "The retirement age of the person",
+            "exclusiveMaximum": 75,
+            "exclusiveMinimum": 55,
+            "type": "integer"
+        }
+    },
+    "description": "An example Porter configuration",
     "invocationImages": [
         {
-            "image": "cnabquickstartstest.azurecr.io/duffle/spring-music-cnab:e8966c3c153a525775cbcddd46f778bed25650b4",
+            "image": "cnabquickstarts.azurecr.io/porter/hello-world:1.0.0",
             "imageType": "docker"
         }
     ],
-    "maintainers": [
-        {
-            "email": "brianisrunning@gmail.com",
-            "name": "Brian Redmond"
-        },
-        {
-            "email": "joey@gmail.com",
-            "name": "Joey Schluchter"
-        }
-    ],
-    "name": "spring-music",
+    "name": "HELLO",
     "parameters": {
-        "aks_resource_group": {
-            "defaultValue": "spring-music-duffle",
+        "age": {
+            "definition": "age",
+            "description": "The age of the person",
             "destination": {
-                "env": "AKS_RESOURCE_GROUP"
-            },
-            "type": "string"
+                "env": "AGE"
+            }
         },
-        "app_resource_group": {
-            "defaultValue": "spring-music-duffle",
+        "person": {
+            "definition": "person",
+            "description": "The name of the person to say hello to",
             "destination": {
-                "env": "APP_RESOURCE_GROUP"
-            },
-            "type": "string"
+                "env": "PERSON"
+            }
         },
-        "cluster_name": {
-            "defaultValue": "spring-music-demo",
+        "place_of_birth": {
+            "definition": "place_of_birth",
+            "description": "The person's place of birth",
             "destination": {
-                "env": "CLUSTER_NAME"
+                "env": "PLACE_OF_BIRTH"
             },
-            "type": "string"
+            "required": true
         },
-        "cosmosdb_location": {
-            "defaultValue": "westeurope",
+        "porter-debug": {
+            "definition": "porter-debug",
+            "description": "Print debug information from Porter when executing the bundle",
             "destination": {
-                "env": "LOCATION"
-            },
-            "type": "string"
+                "env": "PORTER_DEBUG"
+            }
         },
-        "cosmosdb_service_name": {
-            "defaultValue": "springmusicduffle",
+        "retirement_age": {
+            "definition": "retirement_age",
+            "description": "The retirement age of the person",
             "destination": {
-                "env": "COSMOSDB_SERVICE_NAME"
+                "env": "RETIREMENT_AGE"
             },
-            "type": "string"
+            "required": true
         }
     },
-    "version": "0.1.0"
+    "schemaVersion": "v1.0.0",
+    "version": "1.0.0"
 }

@@ -9,9 +9,9 @@ import (
 
 func TestGenerateTemplate(t *testing.T) {
 
-	bundlePath := "testdata/bundle-new.json"
+	bundlePath := "testdata/bundle.json"
 	generatedOutputPath := "testdata/azuredeploy-generated.json"
-	expectedOutputPath := "testdata/azuredeploy-new.json"
+	expectedOutputPath := "testdata/azuredeploy.json"
 
 	err := GenerateTemplate(bundlePath, generatedOutputPath, true, true)
 	if err != nil {

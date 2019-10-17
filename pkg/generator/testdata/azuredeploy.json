@@ -2,26 +2,14 @@
 	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
 	"contentVersion": "1.0.0.0",
 	"parameters": {
-		"aks_resource_group": {
-			"type": "string",
-			"defaultValue": "spring-music-duffle",
-			"metadata": {}
-		},
-		"app_resource_group": {
-			"type": "string",
-			"defaultValue": "spring-music-duffle",
-			"metadata": {}
-		},
-		"azure_client_id": {
-			"type": "securestring"
-		},
-		"azure_client_secret": {
-			"type": "securestring"
-		},
-		"cluster_name": {
-			"type": "string",
-			"defaultValue": "spring-music-demo",
-			"metadata": {}
+		"age": {
+			"type": "int",
+			"defaultValue": 29,
+			"metadata": {
+				"description": "The age of the person"
+			},
+			"minValue": 0,
+			"maxValue": 150
 		},
 		"cnab_action": {
 			"type": "string",
@@ -32,7 +20,7 @@
 		},
 		"cnab_installation_name": {
 			"type": "string",
-			"defaultValue": "duffle-spring-music-cnab",
+			"defaultValue": "cnabquickstarts.azurecr.io-porter-hello-world",
 			"metadata": {
 				"description": "The name of the application instance."
 			}
@@ -79,16 +67,6 @@
 				"description": "Name for the container"
 			}
 		},
-		"cosmosdb_location": {
-			"type": "string",
-			"defaultValue": "westeurope",
-			"metadata": {}
-		},
-		"cosmosdb_service_name": {
-			"type": "string",
-			"defaultValue": "springmusicduffle",
-			"metadata": {}
-		},
 		"location": {
 			"type": "string",
 			"defaultValue": "[resourceGroup().Location]",
@@ -114,6 +92,36 @@
 			"metadata": {
 				"description": "The location in which the resources will be created."
 			}
+		},
+		"password": {
+			"type": "securestring"
+		},
+		"person": {
+			"type": "string",
+			"defaultValue": "mike",
+			"metadata": {
+				"description": "The name of the person to say hello to"
+			},
+			"minLength": 1,
+			"maxLength": 20
+		},
+		"place_of_birth": {
+			"type": "string",
+			"allowedValues": [
+				"UK",
+				"USA"
+			],
+			"metadata": {
+				"description": "The person's place of birth"
+			}
+		},
+		"retirement_age": {
+			"type": "int",
+			"metadata": {
+				"description": "The retirement age of the person"
+			},
+			"minValue": 56,
+			"maxValue": 74
 		}
 	},
 	"resources": [
@@ -193,43 +201,27 @@
 								},
 								{
 									"name": "CNAB_BUNDLE_NAME",
-									"value": "duffle/spring-music-cnab"
+									"value": "cnabquickstarts.azurecr.io/porter/hello-world"
 								},
 								{
-									"name": "AKS_RESOURCE_GROUP",
-									"value": "[parameters('aks_resource_group')]"
+									"name": "AGE",
+									"value": "[parameters('age')]"
 								},
 								{
-									"name": "APP_RESOURCE_GROUP",
-									"value": "[parameters('app_resource_group')]"
+									"name": "PERSON",
+									"value": "[parameters('person')]"
 								},
 								{
-									"name": "CLUSTER_NAME",
-									"value": "[parameters('cluster_name')]"
+									"name": "PLACE_OF_BIRTH",
+									"value": "[parameters('place_of_birth')]"
 								},
 								{
-									"name": "COSMOSDB_LOCATION",
-									"value": "[parameters('cosmosdb_location')]"
+									"name": "RETIREMENT_AGE",
+									"value": "[parameters('retirement_age')]"
 								},
 								{
-									"name": "COSMOSDB_SERVICE_NAME",
-									"value": "[parameters('cosmosdb_service_name')]"
-								},
-								{
-									"name": "AZURE_CLIENT_ID",
-									"secureValue": "[parameters('azure_client_id')]"
-								},
-								{
-									"name": "AZURE_CLIENT_SECRET",
-									"secureValue": "[parameters('azure_client_secret')]"
-								},
-								{
-									"name": "AZURE_SUBSCRIPTION_ID",
-									"value": "[subscription().subscriptionId]"
-								},
-								{
-									"name": "AZURE_TENANT_ID",
-									"value": "[subscription().tenantId]"
+									"name": "PASSWORD",
+									"secureValue": "[parameters('password')]"
 								}
 							]
 						}
