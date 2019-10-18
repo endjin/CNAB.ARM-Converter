@@ -20,7 +20,7 @@
 		},
 		"cnab_installation_name": {
 			"type": "string",
-			"defaultValue": "cnabquickstarts.azurecr.io-porter-hello-world",
+			"defaultValue": "hello-world",
 			"metadata": {
 				"description": "The name of the application instance."
 			}
@@ -163,7 +163,7 @@
 					{
 						"name": "[parameters('containerName')]",
 						"properties": {
-							"image": "cnabquickstartstest.azurecr.io/simongdavies/run-duffle:latest",
+							"image": "cnabquickstarts.azurecr.io/cnabarmdriver:latest",
 							"resources": {
 								"requests": {
 									"cpu": "1.0",
@@ -184,8 +184,12 @@
 									"value": "[parameters('location')]"
 								},
 								{
-									"name": "AZURE_SUBSCRIPTION_ID",
+									"name": "CNAB_AZURE_SUBSCRIPTION_ID",
 									"value": "[subscription().subscriptionId]"
+								},
+								{
+									"name": "CNAB_AZURE_TENANT_ID",
+									"value": "[subscription().tenantId]"
 								},
 								{
 									"name": "CNAB_STATE_STORAGE_ACCOUNT_NAME",
@@ -205,26 +209,26 @@
 								},
 								{
 									"name": "CNAB_BUNDLE_NAME",
-									"value": "cnabquickstarts.azurecr.io/porter/hello-world"
+									"value": "cnabquickstarts.azurecr.io/porter/hello-world:1.0.0"
 								},
 								{
-									"name": "AGE",
+									"name": "CNAB_PARAM_AGE",
 									"value": "[parameters('age')]"
 								},
 								{
-									"name": "PERSON",
+									"name": "CNAB_PARAM_PERSON",
 									"value": "[parameters('person')]"
 								},
 								{
-									"name": "PLACE_OF_BIRTH",
+									"name": "CNAB_PARAM_PLACE_OF_BIRTH",
 									"value": "[parameters('place_of_birth')]"
 								},
 								{
-									"name": "RETIREMENT_AGE",
+									"name": "CNAB_PARAM_RETIREMENT_AGE",
 									"value": "[parameters('retirement_age')]"
 								},
 								{
-									"name": "PASSWORD",
+									"name": "CNAB_CRED_PASSWORD",
 									"secureValue": "[parameters('password')]"
 								}
 							]

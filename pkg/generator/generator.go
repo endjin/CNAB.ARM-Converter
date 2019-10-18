@@ -31,18 +31,16 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 		return err
 	}
 
-	generatedTemplate := template.NewDuffleAciDriverTemplate()
+	generatedTemplate := template.NewCnabArmDriverTemplate()
 
-	// TODO need to fix this when duffle and porter support bundle push/install from registry
 	bundleName, _ := getBundleName(bundle)
 	environmentVariable := template.EnvironmentVariable{
-		Name:  "CNAB_BUNDLE_NAME",
+		Name:  template.CnabBundleNameEnvVar,
 		Value: bundleName,
 	}
 
 	// Set the default installation name to be the bundle name
-
-	installationName := strings.ReplaceAll(bundleName, "/", "-")
+	installationName := bundle.Name
 	generatedTemplate.Parameters["cnab_installation_name"] = template.Parameter{
 		Type:         "string",
 		DefaultValue: installationName,
@@ -67,7 +65,7 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 		parameter := bundle.Parameters[parameterKey]
 		definition := bundle.Definitions[parameter.Definition]
 
-		// Parameter names cannot contain - as they are converted into environment variables set on duffle ACI container
+		// Parameter names cannot contain - as they are converted into environment variables set on ACI container
 
 		// porter-debug is added automatically so can only be modified by updating porter
 		if parameterKey == "porter-debug" {
@@ -148,7 +146,7 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 		}
 
 		environmentVariable := template.EnvironmentVariable{
-			Name:  strings.ToUpper(parameterKey),
+			Name:  "CNAB_PARAM_" + strings.ToUpper(parameterKey),
 			Value: fmt.Sprintf("[parameters('%s')]", parameterKey),
 		}
 
@@ -199,7 +197,7 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 				DefaultValue: defaultValue,
 			}
 			environmentVariable = template.EnvironmentVariable{
-				Name:        strings.ToUpper(credentialKey),
+				Name:        "CNAB_CRED_" + strings.ToUpper(credentialKey),
 				SecureValue: fmt.Sprintf("[parameters('%s')]", credentialKey),
 			}
 		}
@@ -224,13 +222,9 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 }
 
 func getBundleName(bundle *bundle.Bundle) (string, error) {
-
 	for _, i := range bundle.InvocationImages {
 		if i.ImageType == "docker" {
-			if i.Digest == "" {
-				return strings.TrimPrefix(strings.Split(i.Image, ":")[0], bundlecontainerregistry), nil
-			}
-			return strings.TrimPrefix(strings.Split(i.Image, "@")[0], bundlecontainerregistry), nil
+			return i.Image, nil
 		}
 	}
 

@@ -53,7 +53,7 @@
             "imageType": "docker"
         }
     ],
-    "name": "HELLO",
+    "name": "hello-world",
     "parameters": {
         "age": {
             "definition": "age",

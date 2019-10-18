@@ -1,12 +1,12 @@
 package template
 
 const (
-	//Image is the value of the Image property for the container that runs duffle in the generated template
-	Image = "cnabquickstartstest.azurecr.io/simongdavies/run-duffle:latest"
+	//Image is the value of the Image property for the container that runs the ARM driver
+	Image = "cnabquickstarts.azurecr.io/cnabarmdriver:latest"
 )
 
-// NewDuffleAciDriverTemplate creates a new instance of Template for running a CNAB bundle using duffle-aci-docker
-func NewDuffleAciDriverTemplate() Template {
+// NewCnabArmDriverTemplate creates a new instance of Template for running a CNAB bundle using cnab-azure-driver
+func NewCnabArmDriverTemplate() Template {
 
 	resources := []Resource{
 		{
@@ -52,11 +52,11 @@ func NewDuffleAciDriverTemplate() Template {
 							},
 							EnvironmentVariables: []EnvironmentVariable{
 								{
-									Name:  "CNAB_ACTION",
+									Name:  CnabActionEnvVarName,
 									Value: "[parameters('cnab_action')]",
 								},
 								{
-									Name:  "CNAB_INSTALLATION_NAME",
+									Name:  CnabInstallationNameEnvVarName,
 									Value: "[parameters('cnab_installation_name')]",
 								},
 								{
@@ -64,8 +64,12 @@ func NewDuffleAciDriverTemplate() Template {
 									Value: "[parameters('location')]",
 								},
 								{
-									Name:  "AZURE_SUBSCRIPTION_ID",
+									Name:  "CNAB_AZURE_SUBSCRIPTION_ID",
 									Value: "[subscription().subscriptionId]",
+								},
+								{
+									Name:  "CNAB_AZURE_TENANT_ID",
+									Value: "[subscription().tenantId]",
 								},
 								{
 									Name:  "CNAB_STATE_STORAGE_ACCOUNT_NAME",

@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/endjin/CNAB.ARM-Converter/pkg/generator"
+	"github.com/endjin/CNAB.ARM-Converter/pkg/run"
 	"github.com/spf13/cobra"
 )
 
@@ -16,18 +17,26 @@ var outputloc string
 var overwrite bool
 var indent bool
 
-var versionCmd = &cobra.Command{
-	Use:   "version",
-	Short: "Print the atfcnab version",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("atfcnab version: %v \n", Version)
+var rootCmd = &cobra.Command{
+	Use:   "cnabarmdriver",
+	Short: "Runs Porter with the Azure driver, using environment variables ",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return run.Run()
 	},
 }
 
-var rootCmd = &cobra.Command{
-	Use:   "atfcnab",
-	Short: "atfcnab generates an ARM template for executing a CNAB package using Azure ACI",
-	Long:  `atfcnab generates an ARM template which can be used to execute Duffle in a container using ACI to perform actions on a CNAB Package, which in turn executes the CNAB Actions using the Duffle ACI Driver   `,
+var versionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "Print the cnabarmdriver version",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Printf("cnabarmdriver version: %v \n", Version)
+	},
+}
+
+var generateCmd = &cobra.Command{
+	Use:   "generate",
+	Short: "Generates an ARM template for executing a CNAB package using Azure driver",
+	Long:  `Generates an ARM template which can be used to execute Porter in a container using ACI to perform actions on a CNAB Package, which in turn executes the CNAB Actions using the CNAB Azure Driver   `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cmd.SilenceUsage = true
 		return generator.GenerateTemplate(bundleloc, outputloc, overwrite, indent)
@@ -35,12 +44,13 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.Flags().StringVarP(&bundleloc, "bundle", "b", "bundle.json", "name of bundle file to generate template for , default is bundle.json")
-	rootCmd.Flags().StringVarP(&outputloc, "file", "f", "azuredeploy.json", "file name for generated template,default is azuredeploy.json")
-	rootCmd.Flags().BoolVarP(&overwrite, "overwrite", "o", false, "specifies if to overwrite the output file if it already exists, default is false")
-	rootCmd.Flags().BoolVarP(&indent, "indent", "i", false, "specifies if the json output should be indented")
+	generateCmd.Flags().StringVarP(&bundleloc, "bundle", "b", "bundle.json", "name of bundle file to generate template for , default is bundle.json")
+	generateCmd.Flags().StringVarP(&outputloc, "file", "f", "azuredeploy.json", "file name for generated template,default is azuredeploy.json")
+	generateCmd.Flags().BoolVarP(&overwrite, "overwrite", "o", false, "specifies if to overwrite the output file if it already exists, default is false")
+	generateCmd.Flags().BoolVarP(&indent, "indent", "i", false, "specifies if the json output should be indented")
 
 	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(generateCmd)
 }
 
 // Execute runs the template generator

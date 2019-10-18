@@ -5,8 +5,18 @@ import "fmt"
 const (
 	//ContainerGroupName is the value of the ContainerGroup Resource Name property in the generated template
 	ContainerGroupName = "[parameters('containerGroupName')]"
-	//ContainerName is the value of the Container Resource Name property for the container that runs duffle in the generated template
+
+	//ContainerName is the value of the Container Resource Name property for the container that runs porter in the generated template
 	ContainerName = "[parameters('containerName')]"
+
+	// CnabActionEnvVarName is the environment variable for the CNAB action to invoke
+	CnabActionEnvVarName = "CNAB_ACTION"
+
+	// CnabInstallationNameEnvVarName is the environment variable for the CNAB installation name
+	CnabInstallationNameEnvVarName = "CNAB_INSTALLATION_NAME"
+
+	//CnabBundleNameEnvVar is the environment variable for the CNAB bundle name
+	CnabBundleNameEnvVar = "CNAB_BUNDLE_NAME"
 )
 
 // Template defines an ARM Template that can run a CNAB Bundle
