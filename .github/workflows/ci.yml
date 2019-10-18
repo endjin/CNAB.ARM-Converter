@@ -73,7 +73,7 @@ jobs:
           cd $GITHUB_WORKSPACE/docker
           VERSION=${GITHUB_REF#refs/tags/}
           docker build --build-arg CNAB_ARM_DRIVER_VERSION=$VERSION --build-arg CNAB_ARM_DRIVER_REPO=$GITHUB_REPOSITORY . -t cnabquickstarts.azurecr.io/cnabarmdriver:$VERSION
-          docker push -t cnabquickstarts.azurecr.io/cnabarmdriver:$VERSION
+          docker push cnabquickstarts.azurecr.io/cnabarmdriver:$VERSION
           docker build --build-arg CNAB_ARM_DRIVER_VERSION=$VERSION --build-arg CNAB_ARM_DRIVER_REPO=$GITHUB_REPOSITORY . -t cnabquickstarts.azurecr.io/cnabarmdriver:latest
-          docker push -t cnabquickstarts.azurecr.io/cnabarmdriver:latest
+          docker push cnabquickstarts.azurecr.io/cnabarmdriver:latest
       
