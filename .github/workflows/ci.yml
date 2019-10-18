@@ -69,7 +69,7 @@ jobs:
           login-server: ${{ secrets.REGISTRY_SERVER }}
       - name: Docker build & publish
         run: |
-          cd docker
+          cd $GITHUB_WORKSPACE/docker
           VERSION=${GITHUB_REF#refs/tags/}
           docker build --build-arg CNAB_ARM_DRIVER_VERSION=$VERSION --build-arg CNAB_ARM_DRIVER_REPO=$GITHUB_REPOSITORY . -t cnabquickstarts.azurecr.io/cnabarmdriver:$VERSION
           docker push -t cnabquickstarts.azurecr.io/cnabarmdriver:$VERSION
