@@ -31,7 +31,7 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 		return err
 	}
 
-	generatedTemplate := template.NewTemplate()
+	generatedTemplate := template.NewDuffleAciDriverTemplate()
 
 	// TODO need to fix this when duffle and porter support bundle push/install from registry
 	bundleName, _ := getBundleName(bundle)
@@ -51,7 +51,9 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 		},
 	}
 
-	generatedTemplate.SetContainerEnvironmentVariable(environmentVariable)
+	if err = generatedTemplate.SetContainerEnvironmentVariable(environmentVariable); err != nil {
+		return err
+	}
 
 	// Sort parameters, because Go randomizes order when iterating a map
 	var parameterKeys []string
@@ -147,8 +149,9 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 			Value: fmt.Sprintf("[parameters('%s')]", parameterKey),
 		}
 
-		generatedTemplate.SetContainerEnvironmentVariable(environmentVariable)
-
+		if err = generatedTemplate.SetContainerEnvironmentVariable(environmentVariable); err != nil {
+			return err
+		}
 	}
 
 	// Sort credentials, because Go randomizes order when iterating a map
@@ -198,7 +201,9 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 			}
 		}
 
-		generatedTemplate.SetContainerEnvironmentVariable(environmentVariable)
+		if err = generatedTemplate.SetContainerEnvironmentVariable(environmentVariable); err != nil {
+			return err
+		}
 	}
 
 	var data []byte
