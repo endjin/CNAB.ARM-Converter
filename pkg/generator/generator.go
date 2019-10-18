@@ -70,9 +70,12 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 		// Parameter names cannot contain - as they are converted into environment variables set on duffle ACI container
 
 		// porter-debug is added automatically so can only be modified by updating porter
-
 		if parameterKey == "porter-debug" {
 			continue
+		}
+
+		if strings.Contains(parameterKey, "-") {
+			return fmt.Errorf("Invalid Parameter name: %s.ARM template generation requires parameter names that can be used as environment variables", parameterKey)
 		}
 
 		// Location parameter is added to template definition automatically as ACI uses it
@@ -145,7 +148,7 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 		}
 
 		environmentVariable := template.EnvironmentVariable{
-			Name:  parameter.Destination.EnvironmentVariable,
+			Name:  strings.ToUpper(parameterKey),
 			Value: fmt.Sprintf("[parameters('%s')]", parameterKey),
 		}
 
