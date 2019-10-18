@@ -1,5 +1,5 @@
 PROJECT         := CNAB.ARM-Converter
-FILENAME        := cnab-arm
+FILENAME        := cnabarmdriver
 ORG             := endjin
 BINDIR          := $(CURDIR)/bin
 GOFLAGS         :=

@@ -61,3 +61,11 @@ jobs:
           files: binaries/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Authenticate against Azure Container Registry (docker registry)
+        uses: azure/container-actions/docker-login@master
+        with:
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+          login-server: ${{ secrets.REGISTRY_SERVER }}
+      - name: Docker build
+        run: docker build
