@@ -23,14 +23,19 @@ func Run() error {
 	cnabInstallationName := os.Getenv(template.CnabInstallationNameEnvVarName)
 
 	cnabParams := getCnabParams()
-	params := strings.Join(cnabParams, " ")
 
 	credsPath, err := generateCredsFile(cnabInstallationName)
 	if err != nil {
 		log.Fatalf("generateCredsFile command failed with %s\n", err)
 	}
 
-	cmd := exec.Command("porter", cnabAction, cnabInstallationName, "-d", "azure", "--tag", cnabBundleName, "--param", params, "--cred", credsPath)
+	params := []string{cnabAction, cnabInstallationName, "-d", "azure", "--tag", cnabBundleName, "--cred", credsPath}
+	for i := range cnabParams {
+		params = append(params, "--param")
+		params = append(params, cnabParams[i])
+	}
+
+	cmd := exec.Command("porter", params...)
 	log.Println(cmd.String())
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
