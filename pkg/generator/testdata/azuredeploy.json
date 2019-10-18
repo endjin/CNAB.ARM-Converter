@@ -212,23 +212,23 @@
 									"value": "cnabquickstarts.azurecr.io/porter/hello-world:1.0.0"
 								},
 								{
-									"name": "CNAB_PARAM_AGE",
+									"name": "CNAB_PARAM_age",
 									"value": "[parameters('age')]"
 								},
 								{
-									"name": "CNAB_PARAM_PERSON",
+									"name": "CNAB_PARAM_person",
 									"value": "[parameters('person')]"
 								},
 								{
-									"name": "CNAB_PARAM_PLACE_OF_BIRTH",
+									"name": "CNAB_PARAM_place_of_birth",
 									"value": "[parameters('place_of_birth')]"
 								},
 								{
-									"name": "CNAB_PARAM_RETIREMENT_AGE",
+									"name": "CNAB_PARAM_retirement_age",
 									"value": "[parameters('retirement_age')]"
 								},
 								{
-									"name": "CNAB_CRED_PASSWORD",
+									"name": "CNAB_CRED_password",
 									"secureValue": "[parameters('password')]"
 								}
 							]

@@ -16,6 +16,8 @@ import (
 //Run runs Porter with the Azure driver, using environment variables
 func Run() error {
 
+	// TODO validate environment variables are set
+
 	cnabBundleName := os.Getenv(template.CnabBundleNameEnvVar)
 	cnabAction := os.Getenv(template.CnabActionEnvVarName)
 	cnabInstallationName := os.Getenv(template.CnabInstallationNameEnvVarName)
@@ -23,12 +25,16 @@ func Run() error {
 	cnabParams := getCnabParams()
 	params := strings.Join(cnabParams, " ")
 
-	generateCredsFile(cnabInstallationName)
+	credsPath, err := generateCredsFile(cnabInstallationName)
+	if err != nil {
+		log.Fatalf("generateCredsFile command failed with %s\n", err)
+	}
 
-	// porter install <name> -d azure --tag <bundle> --param key1=value1 --cred <credFile>
-
-	cmd := exec.Command("porter", cnabAction, cnabInstallationName, "-d", "azure", "--tag", cnabBundleName, "--param", params, "--cred", cnabInstallationName)
-	err := cmd.Run()
+	cmd := exec.Command("porter", cnabAction, cnabInstallationName, "-d", "azure", "--tag", cnabBundleName, "--param", params, "--cred", credsPath)
+	log.Println(cmd.String())
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
 	if err != nil {
 		log.Fatalf("porter command failed with %s\n", err)
 	}
@@ -36,9 +42,7 @@ func Run() error {
 	return nil
 }
 
-func generateCredsFile(cnabInstallationName string) error {
-	porterHome := os.Getenv("PORTER_HOME")
-
+func generateCredsFile(cnabInstallationName string) (string, error) {
 	cnabCreds := getCnabCreds()
 
 	creds := credentials.CredentialSet{
@@ -60,15 +64,16 @@ func generateCredsFile(cnabInstallationName string) error {
 	}
 
 	credFileName := cnabInstallationName + ".yaml"
-	credPath := path.Join(porterHome, "credentials", credFileName)
+	tempDir, _ := ioutil.TempDir("", "cnabarmdriver")
+	credPath := path.Join(tempDir, credFileName)
 
 	credData, _ := yaml.Marshal(creds)
 
 	if err := ioutil.WriteFile(credPath, credData, 0644); err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return credPath, nil
 }
 
 func getCnabParams() []string {
@@ -81,11 +86,11 @@ func getCnabCreds() []string {
 
 func getEnvVarsStartingWith(prefix string) []string {
 	environmentVariables := os.Environ()
-	filterFunc := func(s string) bool { return !strings.HasPrefix(s, prefix) }
+	filterFunc := func(s string) bool { return strings.HasPrefix(s, prefix) }
 	envVars := filter(environmentVariables, filterFunc)
 
-	for _, envVar := range envVars {
-		envVar = strings.TrimPrefix(envVar, prefix)
+	for i := range envVars {
+		envVars[i] = strings.TrimPrefix(envVars[i], prefix)
 	}
 
 	return envVars

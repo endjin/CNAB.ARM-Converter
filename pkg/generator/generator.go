@@ -146,7 +146,7 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 		}
 
 		environmentVariable := template.EnvironmentVariable{
-			Name:  "CNAB_PARAM_" + strings.ToUpper(parameterKey),
+			Name:  "CNAB_PARAM_" + parameterKey,
 			Value: fmt.Sprintf("[parameters('%s')]", parameterKey),
 		}
 
@@ -197,7 +197,7 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 				DefaultValue: defaultValue,
 			}
 			environmentVariable = template.EnvironmentVariable{
-				Name:        "CNAB_CRED_" + strings.ToUpper(credentialKey),
+				Name:        "CNAB_CRED_" + credentialKey,
 				SecureValue: fmt.Sprintf("[parameters('%s')]", credentialKey),
 			}
 		}
