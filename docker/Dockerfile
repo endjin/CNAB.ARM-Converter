@@ -32,4 +32,4 @@ RUN chmod +x "${TOOLHOME}/cnab-azure"
 RUN curl "https://github.com/${CNAB_ARM_DRIVER_REPO}/releases/download/${CNAB_ARM_DRIVER_VERSION}/cnabarmdriver-linux-amd64" -fLo "${TOOLHOME}/cnabarmdriver"
 RUN chmod +x "${TOOLHOME}/cnabarmdriver"
 
-CMD ["/bin/bash", "-c", "cnabarmdriver"]
+CMD cnabarmdriver
