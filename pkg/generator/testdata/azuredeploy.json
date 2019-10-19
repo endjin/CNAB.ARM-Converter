@@ -13,7 +13,7 @@
 		},
 		"azure_client_secret": {
 			"type": "securestring",
-			"defaultValue": "[parameters('cnab_azure_client_secret')]",
+			"defaultValue": "",
 			"metadata": {
 				"description": "An azure client secret"
 			}

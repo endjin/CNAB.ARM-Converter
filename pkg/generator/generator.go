@@ -194,13 +194,8 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 			}
 		}
 
-		// Set default values to CNAB_ equivalents for azure_subscription_id, azure_tenant_id, azure_client_id, azure_client_secret
-		if credentialKey == "azure_subscription_id" || credentialKey == "azure_tenant_id" || credentialKey == "azure_client_id" || credentialKey == "azure_client_secret" {
-			defaultValue = fmt.Sprintf("[parameters('cnab_%s')]", credentialKey)
-		} else {
-			if !credential.Required {
-				defaultValue = ""
-			}
+		if !credential.Required {
+			defaultValue = ""
 		}
 
 		generatedTemplate.Parameters[credentialKey] = template.Parameter{
