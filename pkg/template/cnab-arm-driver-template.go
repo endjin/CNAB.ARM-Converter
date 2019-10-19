@@ -64,12 +64,20 @@ func NewCnabArmDriverTemplate() Template {
 									Value: "[parameters('cnab_azure_location')]",
 								},
 								{
+									Name:  "CNAB_AZURE_CLIENT_ID",
+									Value: "[parameters('cnab_azure_client_id')]",
+								},
+								{
+									Name:        "CNAB_AZURE_CLIENT_SECRET",
+									SecureValue: "[parameters('cnab_azure_client_secret')]",
+								},
+								{
 									Name:  "CNAB_AZURE_SUBSCRIPTION_ID",
-									Value: "[subscription().subscriptionId]",
+									Value: "[parameters('cnab_azure_subscription_id')]",
 								},
 								{
 									Name:  "CNAB_AZURE_TENANT_ID",
-									Value: "[subscription().tenantId]",
+									Value: "[parameters('cnab_azure_tenant_id')]",
 								},
 								{
 									Name:  "CNAB_STATE_STORAGE_ACCOUNT_NAME",
@@ -126,6 +134,13 @@ func NewCnabArmDriverTemplate() Template {
 				Description: "The location in which the resources will be created.",
 			},
 		},
+		"cnab_action": {
+			Type:         "string",
+			DefaultValue: "install",
+			Metadata: &Metadata{
+				Description: "The name of the action to be performed on the application instance.",
+			},
+		},
 		// TODO:The allowed values should be generated automatically based on ACI availability
 		"cnab_azure_location": {
 			Type:         "string",
@@ -153,11 +168,32 @@ func NewCnabArmDriverTemplate() Template {
 				Description: "The location which the cnab-azure driver will use to create ACI.",
 			},
 		},
-		"cnab_action": {
+		"cnab_azure_client_id": {
 			Type:         "string",
-			DefaultValue: "install",
+			DefaultValue: "",
 			Metadata: &Metadata{
-				Description: "The name of the action to be performed on the application instance.",
+				Description: "AAD Client ID for Azure account authentication - used to authenticate to Azure using Service Principal for ACI creation.",
+			},
+		},
+		"cnab_azure_client_secret": {
+			Type:         "securestring",
+			DefaultValue: "",
+			Metadata: &Metadata{
+				Description: "AAD Client Secret for Azure account authentication - used to authenticate to Azure using Service Principal for ACI creation.",
+			},
+		},
+		"cnab_azure_subscription_id": {
+			Type:         "string",
+			DefaultValue: "[subscription().subscriptionId]",
+			Metadata: &Metadata{
+				Description: "Azure Subscription Id - this is the subscription to be used for ACI creation, if not specified the first (random) subscription is used.",
+			},
+		},
+		"cnab_azure_tenant_id": {
+			Type:         "string",
+			DefaultValue: "[subscription().tenantId]",
+			Metadata: &Metadata{
+				Description: "Azure AAD Tenant Id Azure account authentication - used to authenticate to Azure using Service Principal or Device Code for ACI creation.",
 			},
 		},
 		"containerGroupName": {

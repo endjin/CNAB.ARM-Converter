@@ -18,6 +18,20 @@
 				"description": "The name of the action to be performed on the application instance."
 			}
 		},
+		"cnab_azure_client_id": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"description": "AAD Client ID for Azure account authentication - used to authenticate to Azure using Service Principal for ACI creation."
+			}
+		},
+		"cnab_azure_client_secret": {
+			"type": "securestring",
+			"defaultValue": "",
+			"metadata": {
+				"description": "AAD Client Secret for Azure account authentication - used to authenticate to Azure using Service Principal for ACI creation."
+			}
+		},
 		"cnab_azure_location": {
 			"type": "string",
 			"defaultValue": "[resourceGroup().Location]",
@@ -42,6 +56,20 @@
 			],
 			"metadata": {
 				"description": "The location which the cnab-azure driver will use to create ACI."
+			}
+		},
+		"cnab_azure_subscription_id": {
+			"type": "string",
+			"defaultValue": "[subscription().subscriptionId]",
+			"metadata": {
+				"description": "Azure Subscription Id - this is the subscription to be used for ACI creation, if not specified the first (random) subscription is used."
+			}
+		},
+		"cnab_azure_tenant_id": {
+			"type": "string",
+			"defaultValue": "[subscription().tenantId]",
+			"metadata": {
+				"description": "Azure AAD Tenant Id Azure account authentication - used to authenticate to Azure using Service Principal or Device Code for ACI creation."
 			}
 		},
 		"cnab_installation_name": {
@@ -210,12 +238,20 @@
 									"value": "[parameters('cnab_azure_location')]"
 								},
 								{
+									"name": "CNAB_AZURE_CLIENT_ID",
+									"value": "[parameters('cnab_azure_client_id')]"
+								},
+								{
+									"name": "CNAB_AZURE_CLIENT_SECRET",
+									"secureValue": "[parameters('cnab_azure_client_secret')]"
+								},
+								{
 									"name": "CNAB_AZURE_SUBSCRIPTION_ID",
-									"value": "[subscription().subscriptionId]"
+									"value": "[parameters('cnab_azure_subscription_id')]"
 								},
 								{
 									"name": "CNAB_AZURE_TENANT_ID",
-									"value": "[subscription().tenantId]"
+									"value": "[parameters('cnab_azure_tenant_id')]"
 								},
 								{
 									"name": "CNAB_STATE_STORAGE_ACCOUNT_NAME",
