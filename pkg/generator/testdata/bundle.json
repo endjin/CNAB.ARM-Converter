@@ -3,6 +3,10 @@
         "password": {
             "description": "A secret password",
             "env": "PASSWORD"
+        },
+        "azure_client_secret": {
+            "description": "An azure client secret",
+            "env": "AZURE_CLIENT_SECRET"
         }
     },
     "custom": {

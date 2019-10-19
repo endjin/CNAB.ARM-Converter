@@ -11,6 +11,13 @@
 			"minValue": 0,
 			"maxValue": 150
 		},
+		"azure_client_secret": {
+			"type": "securestring",
+			"defaultValue": "[parameters('cnab_azure_client_secret')]",
+			"metadata": {
+				"description": "An azure client secret"
+			}
+		},
 		"cnab_action": {
 			"type": "string",
 			"defaultValue": "install",
@@ -292,6 +299,10 @@
 								{
 									"name": "CNAB_PARAM_retirement_age",
 									"value": "[parameters('retirement_age')]"
+								},
+								{
+									"name": "CNAB_CRED_azure_client_secret",
+									"secureValue": "[parameters('azure_client_secret')]"
 								},
 								{
 									"name": "CNAB_CRED_password",

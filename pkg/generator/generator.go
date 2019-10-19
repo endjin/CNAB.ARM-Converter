@@ -185,35 +185,32 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 		}
 
 		var environmentVariable template.EnvironmentVariable
+		var metadata template.Metadata
+		var defaultValue interface{}
 
-		// Handle TenantId and SubscriptionId as default values from ARM template functions
-		if credentialKey == "azure_subscription_id" || credentialKey == "azure_tenant_id" {
-			environmentVariable = template.EnvironmentVariable{
-				Name:  strings.ToUpper(credentialKey),
-				Value: fmt.Sprintf("[subscription().%sId]", strings.TrimSuffix(strings.TrimPrefix(credentialKey, "azure_"), "_id")),
+		if credential.Description != "" {
+			metadata = template.Metadata{
+				Description: credential.Description,
 			}
+		}
+
+		// Set default values to CNAB_ equivalents for azure_subscription_id, azure_tenant_id, azure_client_id, azure_client_secret
+		if credentialKey == "azure_subscription_id" || credentialKey == "azure_tenant_id" || credentialKey == "azure_client_id" || credentialKey == "azure_client_secret" {
+			defaultValue = fmt.Sprintf("[parameters('cnab_%s')]", credentialKey)
 		} else {
-			var metadata template.Metadata
-			if credential.Description != "" {
-				metadata = template.Metadata{
-					Description: credential.Description,
-				}
-			}
-
-			var defaultValue interface{}
 			if !credential.Required {
 				defaultValue = ""
 			}
+		}
 
-			generatedTemplate.Parameters[credentialKey] = template.Parameter{
-				Type:         "securestring",
-				Metadata:     &metadata,
-				DefaultValue: defaultValue,
-			}
-			environmentVariable = template.EnvironmentVariable{
-				Name:        "CNAB_CRED_" + credentialKey,
-				SecureValue: fmt.Sprintf("[parameters('%s')]", credentialKey),
-			}
+		generatedTemplate.Parameters[credentialKey] = template.Parameter{
+			Type:         "securestring",
+			Metadata:     &metadata,
+			DefaultValue: defaultValue,
+		}
+		environmentVariable = template.EnvironmentVariable{
+			Name:        "CNAB_CRED_" + credentialKey,
+			SecureValue: fmt.Sprintf("[parameters('%s')]", credentialKey),
 		}
 
 		if err = generatedTemplate.SetContainerEnvironmentVariable(environmentVariable); err != nil {
