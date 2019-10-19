@@ -32,7 +32,7 @@ func Run() error {
 	cmdParams := []string{cnabAction, cnabInstallationName, "-d", "azure", "--tag", cnabBundleTag, "--cred", credsPath}
 	for i := range cnabParams {
 		cmdParams = append(cmdParams, "--param")
-		cmdParams = append(cmdParams, cnabParams[i])
+		cmdParams = append(cmdParams, strings.TrimPrefix(cnabParams[i], "CNAB_PARAM_"))
 	}
 
 	cmd := exec.Command("porter", cmdParams...)
@@ -56,12 +56,13 @@ func generateCredsFile(cnabInstallationName string) (string, error) {
 
 	for _, cnabCred := range cnabCreds {
 		splits := strings.Split(cnabCred, "=")
-		key := splits[0]
+		envVar := splits[0]
+		key := strings.TrimPrefix(envVar, "CNAB_CRED_")
 
 		credentialStrategy := credentials.CredentialStrategy{
 			Name: key,
 			Source: credentials.Source{
-				EnvVar: key,
+				EnvVar: envVar,
 			},
 		}
 
@@ -93,10 +94,6 @@ func getEnvVarsStartingWith(prefix string) []string {
 	environmentVariables := os.Environ()
 	filterFunc := func(s string) bool { return strings.HasPrefix(s, prefix) }
 	envVars := filter(environmentVariables, filterFunc)
-
-	for i := range envVars {
-		envVars[i] = strings.TrimPrefix(envVars[i], prefix)
-	}
 
 	return envVars
 }
