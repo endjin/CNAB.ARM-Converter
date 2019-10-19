@@ -18,7 +18,7 @@ func Run() error {
 
 	// TODO validate environment variables are set
 
-	cnabBundleName := os.Getenv(template.CnabBundleNameEnvVar)
+	cnabBundleTag := os.Getenv(template.CnabBundleTagEnvVar)
 	cnabAction := os.Getenv(template.CnabActionEnvVarName)
 	cnabInstallationName := os.Getenv(template.CnabInstallationNameEnvVarName)
 
@@ -29,13 +29,13 @@ func Run() error {
 		log.Fatalf("generateCredsFile command failed with %s\n", err)
 	}
 
-	params := []string{cnabAction, cnabInstallationName, "-d", "azure", "--tag", cnabBundleName, "--cred", credsPath}
+	cmdParams := []string{cnabAction, cnabInstallationName, "-d", "azure", "--tag", cnabBundleTag, "--cred", credsPath}
 	for i := range cnabParams {
-		params = append(params, "--param")
-		params = append(params, cnabParams[i])
+		cmdParams = append(cmdParams, "--param")
+		cmdParams = append(cmdParams, cnabParams[i])
 	}
 
-	cmd := exec.Command("porter", params...)
+	cmd := exec.Command("porter", cmdParams...)
 	log.Println(cmd.String())
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

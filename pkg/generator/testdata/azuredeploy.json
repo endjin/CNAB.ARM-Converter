@@ -209,7 +209,11 @@
 								},
 								{
 									"name": "CNAB_BUNDLE_NAME",
-									"value": "cnabquickstarts.azurecr.io/porter/hello-world:1.0.0"
+									"value": "hello-world"
+								},
+								{
+									"name": "CNAB_BUNDLE_TAG",
+									"value": "cnabquickstarts.azurecr.io/porter/hello-world/bundle:1.0.0"
 								},
 								{
 									"name": "CNAB_PARAM_age",

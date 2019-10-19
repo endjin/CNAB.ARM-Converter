@@ -17,6 +17,9 @@ const (
 
 	//CnabBundleNameEnvVar is the environment variable for the CNAB bundle name
 	CnabBundleNameEnvVar = "CNAB_BUNDLE_NAME"
+
+	//CnabBundleTagEnvVar is the environment variable for the CNAB bundle tag
+	CnabBundleTagEnvVar = "CNAB_BUNDLE_TAG"
 )
 
 // Template defines an ARM Template that can run a CNAB Bundle

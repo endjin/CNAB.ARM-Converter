@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/deislabs/cnab-go/bundle"
+	"github.com/docker/distribution/reference"
 	"github.com/endjin/CNAB.ARM-Converter/pkg/template"
 )
 
@@ -33,10 +34,27 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 
 	generatedTemplate := template.NewCnabArmDriverTemplate()
 
-	bundleName, _ := getBundleName(bundle)
-	environmentVariable := template.EnvironmentVariable{
+	bundleName := bundle.Name
+	bundleNameEnvironmentVariable := template.EnvironmentVariable{
 		Name:  template.CnabBundleNameEnvVar,
 		Value: bundleName,
+	}
+
+	if err = generatedTemplate.SetContainerEnvironmentVariable(bundleNameEnvironmentVariable); err != nil {
+		return err
+	}
+
+	bundleTag, err := getBundleTag(bundle)
+	if err != nil {
+		return err
+	}
+	bundleTagEnvironmentVariable := template.EnvironmentVariable{
+		Name:  template.CnabBundleTagEnvVar,
+		Value: bundleTag,
+	}
+
+	if err = generatedTemplate.SetContainerEnvironmentVariable(bundleTagEnvironmentVariable); err != nil {
+		return err
 	}
 
 	// Set the default installation name to be the bundle name
@@ -47,10 +65,6 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 		Metadata: &template.Metadata{
 			Description: "The name of the application instance.",
 		},
-	}
-
-	if err = generatedTemplate.SetContainerEnvironmentVariable(environmentVariable); err != nil {
-		return err
 	}
 
 	// Sort parameters, because Go randomizes order when iterating a map
@@ -221,10 +235,27 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 	return nil
 }
 
-func getBundleName(bundle *bundle.Bundle) (string, error) {
+func getBundleTag(bundle *bundle.Bundle) (string, error) {
 	for _, i := range bundle.InvocationImages {
 		if i.ImageType == "docker" {
-			return i.Image, nil
+			ref, err := reference.ParseNamed(i.Image)
+			if err != nil {
+				return "", fmt.Errorf("Cannot parse invocationImage reference: %s", i.Image)
+			}
+
+			bundleTag := ref.Name() + "/bundle"
+
+			if tagged, ok := ref.(reference.Tagged); ok {
+				bundleTag += ":"
+				bundleTag += tagged.Tag()
+			}
+
+			if digested, ok := ref.(reference.Digested); ok {
+				bundleTag += "@"
+				bundleTag += digested.Digest().String()
+			}
+
+			return bundleTag, nil
 		}
 	}
 
