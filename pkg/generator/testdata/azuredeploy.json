@@ -18,6 +18,32 @@
 				"description": "The name of the action to be performed on the application instance."
 			}
 		},
+		"cnab_azure_location": {
+			"type": "string",
+			"defaultValue": "[resourceGroup().Location]",
+			"allowedValues": [
+				"westus",
+				"eastus",
+				"westeurope",
+				"westus2",
+				"northeurope",
+				"southeastasia",
+				"eastus2",
+				"centralus",
+				"australiaeast",
+				"uksouth",
+				"southcentralus",
+				"centralindia",
+				"southindia",
+				"northcentralus",
+				"eastasia",
+				"canadacentral",
+				"japaneast"
+			],
+			"metadata": {
+				"description": "The location which the cnab-azure driver will use to create ACI."
+			}
+		},
 		"cnab_installation_name": {
 			"type": "string",
 			"defaultValue": "hello-world",
@@ -180,8 +206,8 @@
 									"value": "[parameters('cnab_installation_name')]"
 								},
 								{
-									"name": "ACI_LOCATION",
-									"value": "[parameters('location')]"
+									"name": "CNAB_AZURE_LOCATION",
+									"value": "[parameters('cnab_azure_location')]"
 								},
 								{
 									"name": "CNAB_AZURE_SUBSCRIPTION_ID",

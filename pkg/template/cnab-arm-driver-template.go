@@ -60,8 +60,8 @@ func NewCnabArmDriverTemplate() Template {
 									Value: "[parameters('cnab_installation_name')]",
 								},
 								{
-									Name:  "ACI_LOCATION",
-									Value: "[parameters('location')]",
+									Name:  "CNAB_AZURE_LOCATION",
+									Value: "[parameters('cnab_azure_location')]",
 								},
 								{
 									Name:  "CNAB_AZURE_SUBSCRIPTION_ID",
@@ -99,7 +99,6 @@ func NewCnabArmDriverTemplate() Template {
 
 	parameters := map[string]Parameter{
 
-		// TODO:This needs to be renamed to ACI_LOCATION once changes to driver are done so that ACI adn resources can be in different locations
 		// TODO:The allowed values should be generated automatically based on ACI availability
 		"location": {
 			Type:         "string",
@@ -125,6 +124,33 @@ func NewCnabArmDriverTemplate() Template {
 			},
 			Metadata: &Metadata{
 				Description: "The location in which the resources will be created.",
+			},
+		},
+		// TODO:The allowed values should be generated automatically based on ACI availability
+		"cnab_azure_location": {
+			Type:         "string",
+			DefaultValue: "[resourceGroup().Location]",
+			AllowedValues: []string{
+				"westus",
+				"eastus",
+				"westeurope",
+				"westus2",
+				"northeurope",
+				"southeastasia",
+				"eastus2",
+				"centralus",
+				"australiaeast",
+				"uksouth",
+				"southcentralus",
+				"centralindia",
+				"southindia",
+				"northcentralus",
+				"eastasia",
+				"canadacentral",
+				"japaneast",
+			},
+			Metadata: &Metadata{
+				Description: "The location which the cnab-azure driver will use to create ACI.",
 			},
 		},
 		"cnab_action": {
