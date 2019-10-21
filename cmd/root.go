@@ -39,7 +39,7 @@ var generateCmd = &cobra.Command{
 	Long:  `Generates an ARM template which can be used to execute Porter in a container using ACI to perform actions on a CNAB Package, which in turn executes the CNAB Actions using the CNAB Azure Driver   `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cmd.SilenceUsage = true
-		return generator.GenerateTemplate(bundleloc, outputloc, overwrite, indent)
+		return generator.GenerateTemplate(bundleloc, outputloc, overwrite, indent, Version)
 	},
 }
 

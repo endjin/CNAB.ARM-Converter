@@ -3,8 +3,8 @@ package template
 import "github.com/endjin/CNAB.ARM-Converter/pkg/common"
 
 const (
-	//Image is the value of the Image property for the container that runs the ARM driver
-	Image = "cnabquickstarts.azurecr.io/cnabarmdriver:latest"
+	//CnabArmDriverImageName is the image name for the docker image that runs the ARM driver
+	CnabArmDriverImageName = "cnabquickstarts.azurecr.io/cnabarmdriver"
 )
 
 // NewCnabArmDriverTemplate creates a new instance of Template for running a CNAB bundle using cnab-azure-driver
@@ -45,7 +45,6 @@ func NewCnabArmDriverTemplate() Template {
 					{
 						Name: ContainerName,
 						Properties: ContainerProperties{
-							Image: Image,
 							Resources: Resources{
 								Requests: Requests{
 									CPU:        "1.0",

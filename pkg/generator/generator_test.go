@@ -13,7 +13,7 @@ func TestGenerateTemplate(t *testing.T) {
 	generatedOutputPath := "testdata/azuredeploy-generated.json"
 	expectedOutputPath := "testdata/azuredeploy.json"
 
-	err := GenerateTemplate(bundlePath, generatedOutputPath, true, true)
+	err := GenerateTemplate(bundlePath, generatedOutputPath, true, true, "latest")
 	if err != nil {
 		t.Errorf("GenerateTemplate failed: %s", err.Error())
 	}

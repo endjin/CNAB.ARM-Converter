@@ -19,7 +19,7 @@ const (
 )
 
 // GenerateTemplate generates ARM template from bundle metadata
-func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, indent bool) error {
+func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, indent bool, version string) error {
 
 	// TODO support http uri and registry based bundle
 	bundle, err := loadBundle(bundleloc)
@@ -33,6 +33,7 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 	}
 
 	generatedTemplate := template.NewCnabArmDriverTemplate()
+	generatedTemplate.SetContainerImage(template.CnabArmDriverImageName, version)
 
 	bundleName := bundle.Name
 	bundleNameEnvVar := template.EnvironmentVariable{

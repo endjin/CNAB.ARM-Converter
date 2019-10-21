@@ -124,6 +124,18 @@ type Outputs struct {
 	CNABPackageActionLogsCommand Output `json:"CNAB Package Action Logs Command"`
 }
 
+// SetContainerImage sets the image for the container instance
+func (template *Template) SetContainerImage(imageName string, version string) error {
+	container, err := findContainer(template)
+	if err != nil {
+		return err
+	}
+
+	container.Properties.Image = imageName + ":" + version
+
+	return nil
+}
+
 // SetContainerEnvironmentVariable sets a environment variable for the container instance
 func (template *Template) SetContainerEnvironmentVariable(environmentVariable EnvironmentVariable) error {
 	container, err := findContainer(template)
