@@ -10,6 +10,7 @@ import (
 
 	"github.com/deislabs/cnab-go/bundle"
 	"github.com/docker/distribution/reference"
+	"github.com/endjin/CNAB.ARM-Converter/pkg/common"
 	"github.com/endjin/CNAB.ARM-Converter/pkg/template"
 )
 
@@ -21,7 +22,6 @@ const (
 func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, indent bool) error {
 
 	// TODO support http uri and registry based bundle
-
 	bundle, err := loadBundle(bundleloc)
 
 	if err != nil {
@@ -35,12 +35,12 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 	generatedTemplate := template.NewCnabArmDriverTemplate()
 
 	bundleName := bundle.Name
-	bundleNameEnvironmentVariable := template.EnvironmentVariable{
-		Name:  template.CnabBundleNameEnvVar,
+	bundleNameEnvVar := template.EnvironmentVariable{
+		Name:  common.GetEnvironmentVariableNames().CnabBundleName,
 		Value: bundleName,
 	}
 
-	if err = generatedTemplate.SetContainerEnvironmentVariable(bundleNameEnvironmentVariable); err != nil {
+	if err = generatedTemplate.SetContainerEnvironmentVariable(bundleNameEnvVar); err != nil {
 		return err
 	}
 
@@ -48,12 +48,12 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 	if err != nil {
 		return err
 	}
-	bundleTagEnvironmentVariable := template.EnvironmentVariable{
-		Name:  template.CnabBundleTagEnvVar,
+	bundleTagEnvVar := template.EnvironmentVariable{
+		Name:  common.GetEnvironmentVariableNames().CnabBundleTag,
 		Value: bundleTag,
 	}
 
-	if err = generatedTemplate.SetContainerEnvironmentVariable(bundleTagEnvironmentVariable); err != nil {
+	if err = generatedTemplate.SetContainerEnvironmentVariable(bundleTagEnvVar); err != nil {
 		return err
 	}
 
@@ -159,12 +159,12 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 			}
 		}
 
-		environmentVariable := template.EnvironmentVariable{
-			Name:  "CNAB_PARAM_" + parameterKey,
+		paramEnvVar := template.EnvironmentVariable{
+			Name:  common.GetEnvironmentVariableNames().CnabParameterPrefix + parameterKey,
 			Value: fmt.Sprintf("[parameters('%s')]", parameterKey),
 		}
 
-		if err = generatedTemplate.SetContainerEnvironmentVariable(environmentVariable); err != nil {
+		if err = generatedTemplate.SetContainerEnvironmentVariable(paramEnvVar); err != nil {
 			return err
 		}
 	}
@@ -184,13 +184,28 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 			return fmt.Errorf("Invalid Credential name: %s.ARM template generation requires credential names that can be used as environment variables", credentialKey)
 		}
 
-		var environmentVariable template.EnvironmentVariable
 		var metadata template.Metadata
+		var description string
 		var defaultValue interface{}
+		var envVarName string
 
 		if credential.Description != "" {
+			description = credential.Description
+		}
+
+		if credential.Path != "" {
+			if description != "" {
+				description += " "
+			}
+			description += "(Enter base64 encoded representation of file)"
+			envVarName = common.GetEnvironmentVariableNames().CnabCredentialFilePrefix + credentialKey
+		} else {
+			envVarName = common.GetEnvironmentVariableNames().CnabCredentialPrefix + credentialKey
+		}
+
+		if description != "" {
 			metadata = template.Metadata{
-				Description: credential.Description,
+				Description: description,
 			}
 		}
 
@@ -203,12 +218,13 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 			Metadata:     &metadata,
 			DefaultValue: defaultValue,
 		}
-		environmentVariable = template.EnvironmentVariable{
-			Name:        "CNAB_CRED_" + credentialKey,
+
+		credEnvVar := template.EnvironmentVariable{
+			Name:        envVarName,
 			SecureValue: fmt.Sprintf("[parameters('%s')]", credentialKey),
 		}
 
-		if err = generatedTemplate.SetContainerEnvironmentVariable(environmentVariable); err != nil {
+		if err = generatedTemplate.SetContainerEnvironmentVariable(credEnvVar); err != nil {
 			return err
 		}
 	}

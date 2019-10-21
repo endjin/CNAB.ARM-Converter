@@ -187,6 +187,12 @@
 			},
 			"minValue": 56,
 			"maxValue": 74
+		},
+		"secret_file": {
+			"type": "securestring",
+			"metadata": {
+				"description": "A secret file (Enter base64 encoded representation of file)"
+			}
 		}
 	},
 	"resources": [
@@ -307,6 +313,10 @@
 								{
 									"name": "CNAB_CRED_password",
 									"secureValue": "[parameters('password')]"
+								},
+								{
+									"name": "CNAB_CRED_FILE_secret_file",
+									"secureValue": "[parameters('secret_file')]"
 								}
 							]
 						}

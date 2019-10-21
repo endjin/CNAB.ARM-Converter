@@ -1,5 +1,7 @@
 package template
 
+import "github.com/endjin/CNAB.ARM-Converter/pkg/common"
+
 const (
 	//Image is the value of the Image property for the container that runs the ARM driver
 	Image = "cnabquickstarts.azurecr.io/cnabarmdriver:latest"
@@ -52,43 +54,43 @@ func NewCnabArmDriverTemplate() Template {
 							},
 							EnvironmentVariables: []EnvironmentVariable{
 								{
-									Name:  CnabActionEnvVarName,
+									Name:  common.GetEnvironmentVariableNames().CnabAction,
 									Value: "[parameters('cnab_action')]",
 								},
 								{
-									Name:  CnabInstallationNameEnvVarName,
+									Name:  common.GetEnvironmentVariableNames().CnabInstallationName,
 									Value: "[parameters('cnab_installation_name')]",
 								},
 								{
-									Name:  "CNAB_AZURE_LOCATION",
+									Name:  common.GetEnvironmentVariableNames().CnabAzureLocation,
 									Value: "[parameters('cnab_azure_location')]",
 								},
 								{
-									Name:  "CNAB_AZURE_CLIENT_ID",
+									Name:  common.GetEnvironmentVariableNames().CnabAzureClientID,
 									Value: "[parameters('cnab_azure_client_id')]",
 								},
 								{
-									Name:        "CNAB_AZURE_CLIENT_SECRET",
+									Name:        common.GetEnvironmentVariableNames().CnabAzureClientSecret,
 									SecureValue: "[parameters('cnab_azure_client_secret')]",
 								},
 								{
-									Name:  "CNAB_AZURE_SUBSCRIPTION_ID",
+									Name:  common.GetEnvironmentVariableNames().CnabAzureSubscriptionID,
 									Value: "[parameters('cnab_azure_subscription_id')]",
 								},
 								{
-									Name:  "CNAB_AZURE_TENANT_ID",
+									Name:  common.GetEnvironmentVariableNames().CnabAzureTenantID,
 									Value: "[parameters('cnab_azure_tenant_id')]",
 								},
 								{
-									Name:  "CNAB_STATE_STORAGE_ACCOUNT_NAME",
+									Name:  common.GetEnvironmentVariableNames().CnabStateStorageAccountName,
 									Value: "[parameters('cnab_state_storage_account_name')]",
 								},
 								{
-									Name:        "CNAB_STATE_STORAGE_ACCOUNT_KEY",
+									Name:        common.GetEnvironmentVariableNames().CnabStateStorageAccountKey,
 									SecureValue: "[parameters('cnab_state_storage_account_key')]",
 								},
 								{
-									Name:  "CNAB_STATE_SHARE_NAME",
+									Name:  common.GetEnvironmentVariableNames().CnabStateShareName,
 									Value: "[parameters('cnab_state_share_name')]",
 								},
 								{
