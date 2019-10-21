@@ -15,14 +15,23 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+type config struct {
+	cnabBundleTag        string
+	cnabAction           string
+	cnabInstallationName string
+}
+
 //Run runs Porter with the Azure driver, using environment variables
 func Run() error {
 
-	// TODO validate environment variables are set
+	config, err := getConfig()
+	if err != nil {
+		log.Fatalf("%s\n", err)
+	}
 
-	cnabBundleTag := os.Getenv(common.GetEnvironmentVariableNames().CnabBundleTag)
-	cnabAction := os.Getenv(common.GetEnvironmentVariableNames().CnabAction)
-	cnabInstallationName := os.Getenv(common.GetEnvironmentVariableNames().CnabInstallationName)
+	cnabBundleTag := config.cnabBundleTag
+	cnabAction := config.cnabAction
+	cnabInstallationName := config.cnabInstallationName
 
 	cnabParams := getCnabParams()
 
@@ -32,6 +41,7 @@ func Run() error {
 	}
 
 	cmdParams := []string{cnabAction, cnabInstallationName, "-d", "azure", "--tag", cnabBundleTag, "--cred", credsPath}
+
 	for i := range cnabParams {
 		cmdParams = append(cmdParams, "--param")
 		cmdParams = append(cmdParams, strings.TrimPrefix(cnabParams[i], common.GetEnvironmentVariableNames().CnabParameterPrefix))
@@ -47,6 +57,36 @@ func Run() error {
 	}
 
 	return nil
+}
+
+func getConfig() (config, error) {
+	var config config
+	var missing []string
+
+	if cnabBundleTag, ok := os.LookupEnv(common.GetEnvironmentVariableNames().CnabBundleTag); ok {
+		config.cnabBundleTag = cnabBundleTag
+	} else {
+		missing = append(missing, common.GetEnvironmentVariableNames().CnabBundleTag)
+	}
+
+	if cnabAction, ok := os.LookupEnv(common.GetEnvironmentVariableNames().CnabAction); ok {
+		config.cnabAction = cnabAction
+	} else {
+		missing = append(missing, common.GetEnvironmentVariableNames().CnabAction)
+	}
+
+	if cnabInstallationName, ok := os.LookupEnv(common.GetEnvironmentVariableNames().CnabInstallationName); ok {
+		config.cnabInstallationName = cnabInstallationName
+	} else {
+		missing = append(missing, common.GetEnvironmentVariableNames().CnabInstallationName)
+	}
+
+	var err error
+	if len(missing) > 0 {
+		err = fmt.Errorf("The following environment variables must be set but are missing: %s", strings.Join(missing, ", "))
+	}
+
+	return config, err
 }
 
 func generateCredsFile(cnabInstallationName string) (string, error) {
