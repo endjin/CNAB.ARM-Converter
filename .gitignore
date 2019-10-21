@@ -23,6 +23,6 @@ azuredeploy.json
 bundle.json
 !**/testdata/azuredeploy.json
 !**/testdata/bundle.json
-**/testdata/azuredeploy-generated.json
+**/testdata/generated/**
 
 .vscode

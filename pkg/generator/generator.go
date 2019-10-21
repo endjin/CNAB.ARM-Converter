@@ -18,22 +18,31 @@ const (
 	bundlecontainerregistry = "cnabquickstartstest.azurecr.io/"
 )
 
+// GenerateTemplateOptions is the set of options for configuring GenerateTemplate
+type GenerateTemplateOptions struct {
+	BundleLoc  string
+	OutputFile string
+	Overwrite  bool
+	Indent     bool
+	Version    string
+	Simplify   bool
+}
+
 // GenerateTemplate generates ARM template from bundle metadata
-func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, indent bool, version string) error {
+func GenerateTemplate(options GenerateTemplateOptions) error {
 
 	// TODO support http uri and registry based bundle
-	bundle, err := loadBundle(bundleloc)
+	bundle, err := loadBundle(options.BundleLoc)
 
 	if err != nil {
 		return err
 	}
 
-	if err = checkOutputFile(outputfile, overwrite); err != nil {
+	if err = checkOutputFile(options.OutputFile, options.Overwrite); err != nil {
 		return err
 	}
 
-	generatedTemplate := template.NewCnabArmDriverTemplate()
-	generatedTemplate.SetContainerImage(template.CnabArmDriverImageName, version)
+	generatedTemplate := template.NewCnabArmDriverTemplate(bundle.Name, template.CnabArmDriverImageName, options.Version, options.Simplify)
 
 	bundleName := bundle.Name
 	bundleNameEnvVar := template.EnvironmentVariable{
@@ -56,16 +65,6 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 
 	if err = generatedTemplate.SetContainerEnvironmentVariable(bundleTagEnvVar); err != nil {
 		return err
-	}
-
-	// Set the default installation name to be the bundle name
-	installationName := bundle.Name
-	generatedTemplate.Parameters["cnab_installation_name"] = template.Parameter{
-		Type:         "string",
-		DefaultValue: installationName,
-		Metadata: &template.Metadata{
-			Description: "The name of the application instance.",
-		},
 	}
 
 	// Sort parameters, because Go randomizes order when iterating a map
@@ -91,78 +90,86 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 			return fmt.Errorf("Invalid Parameter name: %s.ARM template generation requires parameter names that can be used as environment variables", parameterKey)
 		}
 
-		// Location parameter is added to template definition automatically as ACI uses it
-		if parameterKey != "location" {
+		var paramEnvVar template.EnvironmentVariable
 
-			var metadata template.Metadata
-			if definition.Description != "" {
-				metadata = template.Metadata{
-					Description: definition.Description,
+		if cnabParam, ok := isCnabParam(parameterKey, generatedTemplate); options.Simplify && ok {
+			paramEnvVar = template.EnvironmentVariable{
+				Name:  common.GetEnvironmentVariableNames().CnabParameterPrefix + parameterKey,
+				Value: fmt.Sprintf("[variables('%s')]", cnabParam),
+			}
+		} else {
+			// Location parameter is added to template definition automatically as ACI uses it
+			if parameterKey != "location" {
+				var metadata template.Metadata
+				if definition.Description != "" {
+					metadata = template.Metadata{
+						Description: definition.Description,
+					}
+				}
+
+				var allowedValues interface{}
+				if definition.Enum != nil {
+					allowedValues = definition.Enum
+				}
+
+				var defaultValue interface{}
+				if definition.Default != nil {
+					defaultValue = definition.Default
+				} else {
+					if !parameter.Required {
+						defaultValue = ""
+					}
+				}
+
+				var minValue *int
+				if definition.Minimum != nil {
+					minValue = definition.Minimum
+				}
+				if definition.ExclusiveMinimum != nil {
+					min := *definition.ExclusiveMinimum + 1
+					minValue = &min
+				}
+
+				var maxValue *int
+				if definition.Maximum != nil {
+					maxValue = definition.Maximum
+				}
+				if definition.ExclusiveMaximum != nil {
+					max := *definition.ExclusiveMaximum - 1
+					maxValue = &max
+				}
+
+				var minLength *int
+				if definition.MinLength != nil {
+					minLength = definition.MinLength
+				}
+
+				var maxLength *int
+				if definition.MaxLength != nil {
+					maxLength = definition.MaxLength
+				}
+
+				armType, err := toARMType(definition.Type.(string))
+				if err != nil {
+					return err
+				}
+
+				generatedTemplate.Parameters[parameterKey] = template.Parameter{
+					Type:          armType,
+					AllowedValues: allowedValues,
+					DefaultValue:  defaultValue,
+					Metadata:      &metadata,
+					MinValue:      minValue,
+					MaxValue:      maxValue,
+					MinLength:     minLength,
+					MaxLength:     maxLength,
 				}
 			}
 
-			var allowedValues interface{}
-			if definition.Enum != nil {
-				allowedValues = definition.Enum
+			paramEnvVar = template.EnvironmentVariable{
+				Name:  common.GetEnvironmentVariableNames().CnabParameterPrefix + parameterKey,
+				Value: fmt.Sprintf("[parameters('%s')]", parameterKey),
 			}
-
-			var defaultValue interface{}
-			if definition.Default != nil {
-				defaultValue = definition.Default
-			} else {
-				if !parameter.Required {
-					defaultValue = ""
-				}
-			}
-
-			var minValue *int
-			if definition.Minimum != nil {
-				minValue = definition.Minimum
-			}
-			if definition.ExclusiveMinimum != nil {
-				min := *definition.ExclusiveMinimum + 1
-				minValue = &min
-			}
-
-			var maxValue *int
-			if definition.Maximum != nil {
-				maxValue = definition.Maximum
-			}
-			if definition.ExclusiveMaximum != nil {
-				max := *definition.ExclusiveMaximum - 1
-				maxValue = &max
-			}
-
-			var minLength *int
-			if definition.MinLength != nil {
-				minLength = definition.MinLength
-			}
-
-			var maxLength *int
-			if definition.MaxLength != nil {
-				maxLength = definition.MaxLength
-			}
-
-			armType, err := toARMType(definition.Type.(string))
-			if err != nil {
-				return err
-			}
-
-			generatedTemplate.Parameters[parameterKey] = template.Parameter{
-				Type:          armType,
-				AllowedValues: allowedValues,
-				DefaultValue:  defaultValue,
-				Metadata:      &metadata,
-				MinValue:      minValue,
-				MaxValue:      maxValue,
-				MinLength:     minLength,
-				MaxLength:     maxLength,
-			}
-		}
-
-		paramEnvVar := template.EnvironmentVariable{
-			Name:  common.GetEnvironmentVariableNames().CnabParameterPrefix + parameterKey,
-			Value: fmt.Sprintf("[parameters('%s')]", parameterKey),
 		}
 
 		if err = generatedTemplate.SetContainerEnvironmentVariable(paramEnvVar); err != nil {
@@ -214,15 +221,25 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 			defaultValue = ""
 		}
 
-		generatedTemplate.Parameters[credentialKey] = template.Parameter{
-			Type:         "securestring",
-			Metadata:     &metadata,
-			DefaultValue: defaultValue,
-		}
+		var credEnvVar template.EnvironmentVariable
 
-		credEnvVar := template.EnvironmentVariable{
-			Name:        envVarName,
-			SecureValue: fmt.Sprintf("[parameters('%s')]", credentialKey),
+		if cnabParam, ok := isCnabParam(credentialKey, generatedTemplate); options.Simplify && ok {
+			credEnvVar = template.EnvironmentVariable{
+				Name:        envVarName,
+				SecureValue: fmt.Sprintf("[variables('%s')]", cnabParam),
+			}
+		} else {
+
+			generatedTemplate.Parameters[credentialKey] = template.Parameter{
+				Type:         "securestring",
+				Metadata:     &metadata,
+				DefaultValue: defaultValue,
+			}
+
+			credEnvVar = template.EnvironmentVariable{
+				Name:        envVarName,
+				SecureValue: fmt.Sprintf("[parameters('%s')]", credentialKey),
+			}
 		}
 
 		if err = generatedTemplate.SetContainerEnvironmentVariable(credEnvVar); err != nil {
@@ -231,17 +248,26 @@ func GenerateTemplate(bundleloc string, outputfile string, overwrite bool, inden
 	}
 
 	var data []byte
-	if indent {
+	if options.Indent {
 		data, _ = json.MarshalIndent(generatedTemplate, "", "\t")
 	} else {
 		data, _ = json.Marshal(generatedTemplate)
 	}
 
-	if err := ioutil.WriteFile(outputfile, data, 0644); err != nil {
+	if err := ioutil.WriteFile(options.OutputFile, data, 0644); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func isCnabParam(parameterKey string, template template.Template) (string, bool) {
+	cnabKey := "cnab_" + parameterKey
+	if _, ok := template.Variables[cnabKey]; ok {
+		return cnabKey, true
+	}
+
+	return "", false
 }
 
 func getBundleTag(bundle *bundle.Bundle) (string, error) {

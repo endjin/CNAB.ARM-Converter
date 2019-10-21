@@ -4,10 +4,10 @@ import "fmt"
 
 const (
 	//ContainerGroupName is the value of the ContainerGroup Resource Name property in the generated template
-	ContainerGroupName = "[parameters('containerGroupName')]"
+	ContainerGroupName = "[variables('containerGroupName')]"
 
 	//ContainerName is the value of the Container Resource Name property for the container that runs porter in the generated template
-	ContainerName = "[parameters('containerName')]"
+	ContainerName = "[variables('containerName')]"
 )
 
 // Template defines an ARM Template that can run a CNAB Bundle
@@ -15,6 +15,7 @@ type Template struct {
 	Schema         string               `json:"$schema"`
 	ContentVersion string               `json:"contentVersion"`
 	Parameters     map[string]Parameter `json:"parameters"`
+	Variables      map[string]string    `json:"variables"`
 	Resources      []Resource           `json:"resources"`
 	Outputs        Outputs              `json:"outputs"`
 }
@@ -124,8 +125,8 @@ type Outputs struct {
 	CNABPackageActionLogsCommand Output `json:"CNAB Package Action Logs Command"`
 }
 
-// SetContainerImage sets the image for the container instance
-func (template *Template) SetContainerImage(imageName string, version string) error {
+// setContainerImage sets the image for the container instance
+func (template *Template) setContainerImage(imageName string, version string) error {
 	container, err := findContainer(template)
 	if err != nil {
 		return err

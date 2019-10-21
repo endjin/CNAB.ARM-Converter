@@ -8,15 +8,15 @@ const (
 )
 
 // NewCnabArmDriverTemplate creates a new instance of Template for running a CNAB bundle using cnab-azure-driver
-func NewCnabArmDriverTemplate() Template {
+func NewCnabArmDriverTemplate(bundleName string, containerImageName string, containerImageVersion string, simplify bool) Template {
 
 	resources := []Resource{
 		{
-			Condition:  "[equals(parameters('cnab_state_storage_account_resource_group'),resourceGroup().name)]",
+			Condition:  "[equals(variables('cnab_state_storage_account_resource_group'),resourceGroup().name)]",
 			Type:       "Microsoft.Storage/storageAccounts",
-			Name:       "[parameters('cnab_state_storage_account_name')]",
+			Name:       "[variables('cnab_state_storage_account_name')]",
 			APIVersion: "2019-04-01",
-			Location:   "[parameters('location')]",
+			Location:   "[variables('location')]",
 			Sku: &Sku{
 				Name: "Standard_LRS",
 			},
@@ -36,9 +36,9 @@ func NewCnabArmDriverTemplate() Template {
 			Name:       ContainerGroupName,
 			Type:       "Microsoft.ContainerInstance/containerGroups",
 			APIVersion: "2018-10-01",
-			Location:   "[parameters('location')]",
+			Location:   "[variables('location')]",
 			DependsOn: []string{
-				"[parameters('cnab_state_storage_account_name')]",
+				"[variables('cnab_state_storage_account_name')]",
 			},
 			Properties: ContainerGroupProperties{
 				Containers: []Container{
@@ -54,43 +54,47 @@ func NewCnabArmDriverTemplate() Template {
 							EnvironmentVariables: []EnvironmentVariable{
 								{
 									Name:  common.GetEnvironmentVariableNames().CnabAction,
-									Value: "[parameters('cnab_action')]",
+									Value: "[variables('cnab_action')]",
 								},
 								{
 									Name:  common.GetEnvironmentVariableNames().CnabInstallationName,
-									Value: "[parameters('cnab_installation_name')]",
+									Value: "[variables('cnab_installation_name')]",
 								},
 								{
 									Name:  common.GetEnvironmentVariableNames().CnabAzureLocation,
-									Value: "[parameters('cnab_azure_location')]",
+									Value: "[variables('cnab_azure_location')]",
 								},
 								{
 									Name:  common.GetEnvironmentVariableNames().CnabAzureClientID,
-									Value: "[parameters('cnab_azure_client_id')]",
+									Value: "[variables('cnab_azure_client_id')]",
 								},
 								{
 									Name:        common.GetEnvironmentVariableNames().CnabAzureClientSecret,
-									SecureValue: "[parameters('cnab_azure_client_secret')]",
+									SecureValue: "[variables('cnab_azure_client_secret')]",
 								},
 								{
 									Name:  common.GetEnvironmentVariableNames().CnabAzureSubscriptionID,
-									Value: "[parameters('cnab_azure_subscription_id')]",
+									Value: "[variables('cnab_azure_subscription_id')]",
 								},
 								{
 									Name:  common.GetEnvironmentVariableNames().CnabAzureTenantID,
-									Value: "[parameters('cnab_azure_tenant_id')]",
+									Value: "[variables('cnab_azure_tenant_id')]",
 								},
 								{
 									Name:  common.GetEnvironmentVariableNames().CnabStateStorageAccountName,
-									Value: "[parameters('cnab_state_storage_account_name')]",
+									Value: "[variables('cnab_state_storage_account_name')]",
 								},
 								{
 									Name:        common.GetEnvironmentVariableNames().CnabStateStorageAccountKey,
-									SecureValue: "[parameters('cnab_state_storage_account_key')]",
+									SecureValue: "[variables('cnab_state_storage_account_key')]",
+								},
+								{
+									Name:  common.GetEnvironmentVariableNames().CnabStateStorageAccountResourceGroup,
+									Value: "[variables('cnab_state_storage_account_resource_group')]",
 								},
 								{
 									Name:  common.GetEnvironmentVariableNames().CnabStateShareName,
-									Value: "[parameters('cnab_state_share_name')]",
+									Value: "[variables('cnab_state_share_name')]",
 								},
 								{
 									Name:  "VERBOSE",
@@ -107,9 +111,32 @@ func NewCnabArmDriverTemplate() Template {
 	}
 
 	parameters := map[string]Parameter{
+		"cnab_action": {
+			Type:         "string",
+			DefaultValue: "install",
+			Metadata: &Metadata{
+				Description: "The name of the action to be performed on the application instance.",
+			},
+		},
+		"cnab_azure_client_id": {
+			Type:         "string",
+			DefaultValue: "",
+			Metadata: &Metadata{
+				Description: "AAD Client ID for Azure account authentication - used to authenticate to Azure using Service Principal for ACI creation.",
+			},
+		},
+		"cnab_azure_client_secret": {
+			Type:         "securestring",
+			DefaultValue: "",
+			Metadata: &Metadata{
+				Description: "AAD Client Secret for Azure account authentication - used to authenticate to Azure using Service Principal for ACI creation.",
+			},
+		},
+	}
 
+	if !simplify {
 		// TODO:The allowed values should be generated automatically based on ACI availability
-		"location": {
+		parameters["location"] = Parameter{
 			Type:         "string",
 			DefaultValue: "[resourceGroup().Location]",
 			AllowedValues: []string{
@@ -134,16 +161,10 @@ func NewCnabArmDriverTemplate() Template {
 			Metadata: &Metadata{
 				Description: "The location in which the resources will be created.",
 			},
-		},
-		"cnab_action": {
-			Type:         "string",
-			DefaultValue: "install",
-			Metadata: &Metadata{
-				Description: "The name of the action to be performed on the application instance.",
-			},
-		},
+		}
+
 		// TODO:The allowed values should be generated automatically based on ACI availability
-		"cnab_azure_location": {
+		parameters["cnab_azure_location"] = Parameter{
 			Type:         "string",
 			DefaultValue: "[resourceGroup().Location]",
 			AllowedValues: []string{
@@ -168,83 +189,86 @@ func NewCnabArmDriverTemplate() Template {
 			Metadata: &Metadata{
 				Description: "The location which the cnab-azure driver will use to create ACI.",
 			},
-		},
-		"cnab_azure_client_id": {
-			Type:         "string",
-			DefaultValue: "",
-			Metadata: &Metadata{
-				Description: "AAD Client ID for Azure account authentication - used to authenticate to Azure using Service Principal for ACI creation.",
-			},
-		},
-		"cnab_azure_client_secret": {
-			Type:         "securestring",
-			DefaultValue: "",
-			Metadata: &Metadata{
-				Description: "AAD Client Secret for Azure account authentication - used to authenticate to Azure using Service Principal for ACI creation.",
-			},
-		},
-		"cnab_azure_subscription_id": {
+		}
+
+		parameters["cnab_azure_subscription_id"] = Parameter{
 			Type:         "string",
 			DefaultValue: "[subscription().subscriptionId]",
 			Metadata: &Metadata{
 				Description: "Azure Subscription Id - this is the subscription to be used for ACI creation, if not specified the first (random) subscription is used.",
 			},
-		},
-		"cnab_azure_tenant_id": {
+		}
+
+		parameters["cnab_azure_tenant_id"] = Parameter{
 			Type:         "string",
 			DefaultValue: "[subscription().tenantId]",
 			Metadata: &Metadata{
 				Description: "Azure AAD Tenant Id Azure account authentication - used to authenticate to Azure using Service Principal or Device Code for ACI creation.",
 			},
-		},
-		"containerGroupName": {
+		}
+
+		parameters["cnab_installation_name"] = Parameter{
+			Type:         "string",
+			DefaultValue: bundleName,
+			Metadata: &Metadata{
+				Description: "The name of the application instance.",
+			},
+		}
+
+		parameters["containerGroupName"] = Parameter{
 			Type: "string",
 			Metadata: &Metadata{
 				Description: "Name for the container group",
 			},
 			DefaultValue: "[concat('cg-',uniqueString(resourceGroup().id, newGuid()))]",
-		},
-		"containerName": {
+		}
+
+		parameters["containerName"] = Parameter{
 			Type: "string",
 			Metadata: &Metadata{
 				Description: "Name for the container",
 			},
 			DefaultValue: "[concat('cn-',uniqueString(resourceGroup().id, newGuid()))]",
-		},
-		"cnab_state_storage_account_name": {
+		}
+
+		parameters["cnab_state_storage_account_name"] = Parameter{
 			Type: "string",
 			Metadata: &Metadata{
 				Description: "The storage account name for the account for the CNAB state to be stored in, by default this will be in the current resource group and will be created if it does not exist",
 			},
 			DefaultValue: "[concat('cnabstate',uniqueString(resourceGroup().id))]",
-		},
-		"cnab_state_storage_account_key": {
+		}
+
+		parameters["cnab_state_storage_account_key"] = Parameter{
 			Type: "string",
 			Metadata: &Metadata{
 				Description: "The storage account key for the account for the CNAB state to be stored in, if this is left blank it will be looked up at runtime",
 			},
 			DefaultValue: "",
-		},
-		"cnab_state_share_name": {
+		}
+
+		parameters["cnab_state_share_name"] = Parameter{
 			Type: "string",
 			Metadata: &Metadata{
 				Description: "The file share name in the storage account for the CNAB state to be stored in",
 			},
 			DefaultValue: "",
-		},
-		"cnab_state_storage_account_resource_group": {
+		}
+
+		parameters["cnab_state_storage_account_resource_group"] = Parameter{
 			Type: "string",
 			Metadata: &Metadata{
 				Description: "The resource group name for the storage account for the CNAB state to be stored in, by default this will be in the current resource group, if this is changed to a different resource group the storage account is expected to already exist",
 			},
 			DefaultValue: "[resourceGroup().name]",
-		},
+		}
+
 	}
 
 	output := Outputs{
 		Output{
 			Type:  "string",
-			Value: "[concat('az container logs -g ',resourceGroup().name,' -n ',parameters('containerGroupName'),'  --container-name ',parameters('containerName'), ' --follow')]",
+			Value: "[concat('az container logs -g ',resourceGroup().name,' -n ',variables('containerGroupName'),'  --container-name ',variables('containerName'), ' --follow')]",
 		},
 	}
 
@@ -256,5 +280,55 @@ func NewCnabArmDriverTemplate() Template {
 		Outputs:        output,
 	}
 
+	template.setContainerImage(containerImageName, containerImageVersion)
+
+	if simplify {
+		template.addSimpleVariables(bundleName)
+	} else {
+		template.addAdvancedVariables()
+	}
+
 	return template
+}
+
+func (template *Template) addAdvancedVariables() {
+	variables := map[string]string{
+		"cnab_action":                               "[parameters('cnab_action')]",
+		"cnab_azure_client_id":                      "[parameters('cnab_azure_client_id')]",
+		"cnab_azure_client_secret":                  "[parameters('cnab_azure_client_secret')]",
+		"cnab_azure_location":                       "[parameters('cnab_azure_location')]",
+		"cnab_azure_subscription_id":                "[parameters('cnab_azure_subscription_id')]",
+		"cnab_azure_tenant_id":                      "[parameters('cnab_azure_tenant_id')]",
+		"cnab_installation_name":                    "[parameters('cnab_installation_name')]",
+		"cnab_state_share_name":                     "[parameters('cnab_state_share_name')]",
+		"cnab_state_storage_account_key":            "[parameters('cnab_state_storage_account_key')]",
+		"cnab_state_storage_account_name":           "[parameters('cnab_state_storage_account_name')]",
+		"cnab_state_storage_account_resource_group": "[parameters('cnab_state_storage_account_resource_group')]",
+		"containerGroupName":                        "[parameters('containerGroupName')]",
+		"containerName":                             "[parameters('containerName')]",
+		"location":                                  "[parameters('location')]",
+	}
+
+	template.Variables = variables
+}
+
+func (template *Template) addSimpleVariables(bundleName string) {
+	variables := map[string]string{
+		"cnab_action":                               "[parameters('cnab_action')]",
+		"cnab_azure_client_id":                      "[parameters('cnab_azure_client_id')]",
+		"cnab_azure_client_secret":                  "[parameters('cnab_azure_client_secret')]",
+		"cnab_azure_location":                       "[resourceGroup().Location]",
+		"cnab_azure_subscription_id":                "[subscription().subscriptionId]",
+		"cnab_azure_tenant_id":                      "[subscription().tenantId]",
+		"cnab_installation_name":                    bundleName,
+		"cnab_state_share_name":                     bundleName,
+		"cnab_state_storage_account_key":            "",
+		"cnab_state_storage_account_name":           "[concat('cnabstate',uniqueString(resourceGroup().id))]",
+		"cnab_state_storage_account_resource_group": "[resourceGroup().name]",
+		"containerGroupName":                        "[concat('cg-',uniqueString(resourceGroup().id, newGuid()))]",
+		"containerName":                             "[concat('cn-',uniqueString(resourceGroup().id, newGuid()))]",
+		"location":                                  "[resourceGroup().Location]",
+	}
+
+	template.Variables = variables
 }

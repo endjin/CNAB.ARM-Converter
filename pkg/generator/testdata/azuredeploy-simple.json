@@ -11,13 +11,6 @@
 			"minValue": 0,
 			"maxValue": 150
 		},
-		"azure_client_secret": {
-			"type": "securestring",
-			"defaultValue": "",
-			"metadata": {
-				"description": "An azure client secret"
-			}
-		},
 		"cnab_action": {
 			"type": "string",
 			"defaultValue": "install",
@@ -37,121 +30,6 @@
 			"defaultValue": "",
 			"metadata": {
 				"description": "AAD Client Secret for Azure account authentication - used to authenticate to Azure using Service Principal for ACI creation."
-			}
-		},
-		"cnab_azure_location": {
-			"type": "string",
-			"defaultValue": "[resourceGroup().Location]",
-			"allowedValues": [
-				"westus",
-				"eastus",
-				"westeurope",
-				"westus2",
-				"northeurope",
-				"southeastasia",
-				"eastus2",
-				"centralus",
-				"australiaeast",
-				"uksouth",
-				"southcentralus",
-				"centralindia",
-				"southindia",
-				"northcentralus",
-				"eastasia",
-				"canadacentral",
-				"japaneast"
-			],
-			"metadata": {
-				"description": "The location which the cnab-azure driver will use to create ACI."
-			}
-		},
-		"cnab_azure_subscription_id": {
-			"type": "string",
-			"defaultValue": "[subscription().subscriptionId]",
-			"metadata": {
-				"description": "Azure Subscription Id - this is the subscription to be used for ACI creation, if not specified the first (random) subscription is used."
-			}
-		},
-		"cnab_azure_tenant_id": {
-			"type": "string",
-			"defaultValue": "[subscription().tenantId]",
-			"metadata": {
-				"description": "Azure AAD Tenant Id Azure account authentication - used to authenticate to Azure using Service Principal or Device Code for ACI creation."
-			}
-		},
-		"cnab_installation_name": {
-			"type": "string",
-			"defaultValue": "hello-world",
-			"metadata": {
-				"description": "The name of the application instance."
-			}
-		},
-		"cnab_state_share_name": {
-			"type": "string",
-			"defaultValue": "",
-			"metadata": {
-				"description": "The file share name in the storage account for the CNAB state to be stored in"
-			}
-		},
-		"cnab_state_storage_account_key": {
-			"type": "string",
-			"defaultValue": "",
-			"metadata": {
-				"description": "The storage account key for the account for the CNAB state to be stored in, if this is left blank it will be looked up at runtime"
-			}
-		},
-		"cnab_state_storage_account_name": {
-			"type": "string",
-			"defaultValue": "[concat('cnabstate',uniqueString(resourceGroup().id))]",
-			"metadata": {
-				"description": "The storage account name for the account for the CNAB state to be stored in, by default this will be in the current resource group and will be created if it does not exist"
-			}
-		},
-		"cnab_state_storage_account_resource_group": {
-			"type": "string",
-			"defaultValue": "[resourceGroup().name]",
-			"metadata": {
-				"description": "The resource group name for the storage account for the CNAB state to be stored in, by default this will be in the current resource group, if this is changed to a different resource group the storage account is expected to already exist"
-			}
-		},
-		"containerGroupName": {
-			"type": "string",
-			"defaultValue": "[concat('cg-',uniqueString(resourceGroup().id, newGuid()))]",
-			"metadata": {
-				"description": "Name for the container group"
-			}
-		},
-		"containerName": {
-			"type": "string",
-			"defaultValue": "[concat('cn-',uniqueString(resourceGroup().id, newGuid()))]",
-			"metadata": {
-				"description": "Name for the container"
-			}
-		},
-		"location": {
-			"type": "string",
-			"defaultValue": "[resourceGroup().Location]",
-			"allowedValues": [
-				"westus",
-				"eastus",
-				"westeurope",
-				"westus2",
-				"northeurope",
-				"southeastasia",
-				"eastus2",
-				"centralus",
-				"australiaeast",
-				"uksouth",
-				"southcentralus",
-				"centralindia",
-				"southindia",
-				"northcentralus",
-				"eastasia",
-				"canadacentral",
-				"japaneast"
-			],
-			"metadata": {
-				"description": "The location in which the resources will be created."
 			}
 		},
 		"password": {
@@ -199,17 +77,17 @@
 		"cnab_action": "[parameters('cnab_action')]",
 		"cnab_azure_client_id": "[parameters('cnab_azure_client_id')]",
 		"cnab_azure_client_secret": "[parameters('cnab_azure_client_secret')]",
-		"cnab_azure_location": "[parameters('cnab_azure_location')]",
-		"cnab_azure_subscription_id": "[parameters('cnab_azure_subscription_id')]",
-		"cnab_azure_tenant_id": "[parameters('cnab_azure_tenant_id')]",
-		"cnab_installation_name": "[parameters('cnab_installation_name')]",
-		"cnab_state_share_name": "[parameters('cnab_state_share_name')]",
-		"cnab_state_storage_account_key": "[parameters('cnab_state_storage_account_key')]",
-		"cnab_state_storage_account_name": "[parameters('cnab_state_storage_account_name')]",
-		"cnab_state_storage_account_resource_group": "[parameters('cnab_state_storage_account_resource_group')]",
-		"containerGroupName": "[parameters('containerGroupName')]",
-		"containerName": "[parameters('containerName')]",
-		"location": "[parameters('location')]"
+		"cnab_azure_location": "[resourceGroup().Location]",
+		"cnab_azure_subscription_id": "[subscription().subscriptionId]",
+		"cnab_azure_tenant_id": "[subscription().tenantId]",
+		"cnab_installation_name": "hello-world",
+		"cnab_state_share_name": "hello-world",
+		"cnab_state_storage_account_key": "",
+		"cnab_state_storage_account_name": "[concat('cnabstate',uniqueString(resourceGroup().id))]",
+		"cnab_state_storage_account_resource_group": "[resourceGroup().name]",
+		"containerGroupName": "[concat('cg-',uniqueString(resourceGroup().id, newGuid()))]",
+		"containerName": "[concat('cn-',uniqueString(resourceGroup().id, newGuid()))]",
+		"location": "[resourceGroup().Location]"
 	},
 	"resources": [
 		{
@@ -328,7 +206,7 @@
 								},
 								{
 									"name": "CNAB_CRED_azure_client_secret",
-									"secureValue": "[parameters('azure_client_secret')]"
+									"secureValue": "[variables('cnab_azure_client_secret')]"
 								},
 								{
 									"name": "CNAB_CRED_password",
