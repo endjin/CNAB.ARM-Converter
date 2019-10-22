@@ -2,12 +2,15 @@ package generator
 
 import (
 	"io/ioutil"
+	"os"
 	"testing"
 
 	"gotest.tools/assert"
 )
 
 func TestGenerateTemplate(t *testing.T) {
+
+	os.MkdirAll("testdata/generated", 0644)
 
 	bundlePath := "testdata/bundle.json"
 	generatedOutputPath := "testdata/generated/azuredeploy-generated.json"
@@ -42,6 +45,8 @@ func TestGenerateTemplate(t *testing.T) {
 }
 
 func TestGenerateSimpleTemplate(t *testing.T) {
+
+	os.MkdirAll("testdata/generated", 0644)
 
 	bundlePath := "testdata/bundle.json"
 	generatedOutputPath := "testdata/generated/azuredeploy-simple-generated.json"
