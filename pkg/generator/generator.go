@@ -147,11 +147,11 @@ func GenerateTemplate(options GenerateTemplateOptions) error {
 				MinLength:     minLength,
 				MaxLength:     maxLength,
 			}
-		}
 
-		paramEnvVar = template.EnvironmentVariable{
-			Name:  common.GetEnvironmentVariableNames().CnabParameterPrefix + parameterKey,
-			Value: fmt.Sprintf("[parameters('%s')]", parameterKey),
+			paramEnvVar = template.EnvironmentVariable{
+				Name:  common.GetEnvironmentVariableNames().CnabParameterPrefix + parameterKey,
+				Value: fmt.Sprintf("[parameters('%s')]", parameterKey),
+			}
 		}
 
 		if err = generatedTemplate.SetContainerEnvironmentVariable(paramEnvVar); err != nil {
@@ -211,7 +211,6 @@ func GenerateTemplate(options GenerateTemplateOptions) error {
 				SecureValue: fmt.Sprintf("[variables('%s')]", cnabParam),
 			}
 		} else {
-
 			generatedTemplate.Parameters[credentialKey] = template.Parameter{
 				Type:         "securestring",
 				Metadata:     &metadata,

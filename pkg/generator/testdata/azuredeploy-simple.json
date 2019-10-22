@@ -193,6 +193,10 @@
 									"value": "[parameters('age')]"
 								},
 								{
+									"name": "CNAB_PARAM_azure_location",
+									"value": "[variables('cnab_azure_location')]"
+								},
+								{
 									"name": "CNAB_PARAM_person",
 									"value": "[parameters('person')]"
 								},

@@ -28,6 +28,10 @@
             "minimum": 0,
             "type": "integer"
         },
+        "azure_location": {
+            "description": "The Azure location for resources",
+            "type": "string"
+        },
         "person": {
             "default": "mike",
             "description": "The name of the person to say hello to",
@@ -69,6 +73,13 @@
             "description": "The age of the person",
             "destination": {
                 "env": "AGE"
+            }
+        },
+        "azure_location": {
+            "definition": "azure_location",
+            "description": "The Azure location for resources",
+            "destination": {
+                "env": "AZURE_LOCATION"
             }
         },
         "person": {

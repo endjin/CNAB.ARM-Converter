@@ -44,6 +44,13 @@
 				"description": "An azure client secret"
 			}
 		},
+		"azure_location": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"description": "The Azure location for resources"
+			}
+		},
 		"cnab_action": {
 			"type": "string",
 			"defaultValue": "install",
@@ -313,6 +320,10 @@
 								{
 									"name": "CNAB_PARAM_age",
 									"value": "[parameters('age')]"
+								},
+								{
+									"name": "CNAB_PARAM_azure_location",
+									"value": "[parameters('azure_location')]"
 								},
 								{
 									"name": "CNAB_PARAM_person",
