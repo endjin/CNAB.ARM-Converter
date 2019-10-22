@@ -17,6 +17,7 @@ Flags:
   -h, --help            help for cnabarmdriver
   -i, --indent          specifies if the json output should be indented
   -o, --overwrite       specifies if to overwrite the output file if it already exists, default is false
+  -s, --simplify        specifies if the ARM template should be simplified, exposing less parameters and inferring default values
 ```
 
 Invoking bundle  in ACI using the cnab-azure-driver

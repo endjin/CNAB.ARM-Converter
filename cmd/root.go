@@ -16,6 +16,7 @@ var bundleloc string
 var outputloc string
 var overwrite bool
 var indent bool
+var simplify bool
 
 var rootCmd = &cobra.Command{
 	Use:   "cnabarmdriver",
@@ -46,6 +47,7 @@ var generateCmd = &cobra.Command{
 			OutputFile: outputloc,
 			Overwrite:  overwrite,
 			Version:    Version,
+			Simplify:	simplify,
 		}
 
 		return generator.GenerateTemplate(options)
@@ -57,6 +59,7 @@ func init() {
 	generateCmd.Flags().StringVarP(&outputloc, "file", "f", "azuredeploy.json", "file name for generated template,default is azuredeploy.json")
 	generateCmd.Flags().BoolVarP(&overwrite, "overwrite", "o", false, "specifies if to overwrite the output file if it already exists, default is false")
 	generateCmd.Flags().BoolVarP(&indent, "indent", "i", false, "specifies if the json output should be indented")
+	generateCmd.Flags().BoolVarP(&simplify, "simplify", "s", false, "specifies if the ARM template should be simplified, exposing less parameters and inferring default values")
 
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(generateCmd)
