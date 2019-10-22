@@ -20,7 +20,7 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 			Type:       "Microsoft.Storage/storageAccounts",
 			Name:       "[variables('cnab_state_storage_account_name')]",
 			APIVersion: "2019-04-01",
-			Location:   "[variables('location')]",
+			Location:   "[variables('aci_location')]",
 			Sku: &Sku{
 				Name: "Standard_LRS",
 			},
@@ -40,7 +40,7 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 			Name:       ContainerGroupName,
 			Type:       "Microsoft.ContainerInstance/containerGroups",
 			APIVersion: "2018-10-01",
-			Location:   "[variables('location')]",
+			Location:   "[variables('aci_location')]",
 			DependsOn: []string{
 				"[variables('cnab_state_storage_account_name')]",
 			},
@@ -148,7 +148,7 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 
 	if !simplify {
 		// TODO:The allowed values should be generated automatically based on ACI availability
-		parameters["location"] = Parameter{
+		parameters["aci_location"] = Parameter{
 			Type:         "string",
 			DefaultValue: "[resourceGroup().Location]",
 			AllowedValues: []string{
@@ -171,7 +171,7 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 				"japaneast",
 			},
 			Metadata: &Metadata{
-				Description: "The location in which the resources will be created.",
+				Description: "The location in which the bootstrapper ACI resources will be created.",
 			},
 		}
 
@@ -318,7 +318,7 @@ func (template *Template) addAdvancedVariables() {
 		"cnab_state_storage_account_resource_group": "[parameters('cnab_state_storage_account_resource_group')]",
 		"containerGroupName":                        "[parameters('containerGroupName')]",
 		"containerName":                             "[parameters('containerName')]",
-		"location":                                  "[parameters('location')]",
+		"aci_location":                                  "[parameters('aci_location')]",
 	}
 
 	template.Variables = variables
@@ -339,7 +339,7 @@ func (template *Template) addSimpleVariables(bundleName string, bundleTag string
 		"cnab_state_storage_account_resource_group": "[resourceGroup().name]",
 		"containerGroupName":                        fmt.Sprintf("[concat('cg-',uniqueString(resourceGroup().id, '%s', '%s'))]", bundleName, bundleTag),
 		"containerName":                             fmt.Sprintf("[concat('cn-',uniqueString(resourceGroup().id, '%s', '%s'))]", bundleName, bundleTag),
-		"location":                                  "[resourceGroup().Location]",
+		"aci_location":                                  "[resourceGroup().Location]",
 	}
 
 	template.Variables = variables

@@ -74,6 +74,7 @@
 		}
 	},
 	"variables": {
+		"aci_location": "[resourceGroup().Location]",
 		"cnab_action": "[parameters('cnab_action')]",
 		"cnab_azure_client_id": "[parameters('cnab_azure_client_id')]",
 		"cnab_azure_client_secret": "[parameters('cnab_azure_client_secret')]",
@@ -86,8 +87,7 @@
 		"cnab_state_storage_account_name": "[concat('cnabstate',uniqueString(resourceGroup().id))]",
 		"cnab_state_storage_account_resource_group": "[resourceGroup().name]",
 		"containerGroupName": "[concat('cg-',uniqueString(resourceGroup().id, 'hello-world', 'cnabquickstarts.azurecr.io/porter/hello-world/bundle:1.0.0'))]",
-		"containerName": "[concat('cn-',uniqueString(resourceGroup().id, 'hello-world', 'cnabquickstarts.azurecr.io/porter/hello-world/bundle:1.0.0'))]",
-		"location": "[resourceGroup().Location]"
+		"containerName": "[concat('cn-',uniqueString(resourceGroup().id, 'hello-world', 'cnabquickstarts.azurecr.io/porter/hello-world/bundle:1.0.0'))]"
 	},
 	"resources": [
 		{
@@ -95,7 +95,7 @@
 			"type": "Microsoft.Storage/storageAccounts",
 			"name": "[variables('cnab_state_storage_account_name')]",
 			"apiVersion": "2019-04-01",
-			"location": "[variables('location')]",
+			"location": "[variables('aci_location')]",
 			"sku": {
 				"name": "Standard_LRS"
 			},
@@ -115,7 +115,7 @@
 			"type": "Microsoft.ContainerInstance/containerGroups",
 			"name": "[variables('containerGroupName')]",
 			"apiVersion": "2018-10-01",
-			"location": "[variables('location')]",
+			"location": "[variables('aci_location')]",
 			"dependsOn": [
 				"[variables('cnab_state_storage_account_name')]"
 			],

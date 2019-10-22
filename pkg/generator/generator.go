@@ -83,78 +83,75 @@ func GenerateTemplate(options GenerateTemplateOptions) error {
 				Value: fmt.Sprintf("[variables('%s')]", cnabParam),
 			}
 		} else {
-			// Location parameter is added to template definition automatically as ACI uses it
-			if parameterKey != "location" {
-				var metadata template.Metadata
-				if definition.Description != "" {
-					metadata = template.Metadata{
-						Description: definition.Description,
-					}
-				}
-
-				var allowedValues interface{}
-				if definition.Enum != nil {
-					allowedValues = definition.Enum
-				}
-
-				var defaultValue interface{}
-				if definition.Default != nil {
-					defaultValue = definition.Default
-				} else {
-					if !parameter.Required {
-						defaultValue = ""
-					}
-				}
-
-				var minValue *int
-				if definition.Minimum != nil {
-					minValue = definition.Minimum
-				}
-				if definition.ExclusiveMinimum != nil {
-					min := *definition.ExclusiveMinimum + 1
-					minValue = &min
-				}
-
-				var maxValue *int
-				if definition.Maximum != nil {
-					maxValue = definition.Maximum
-				}
-				if definition.ExclusiveMaximum != nil {
-					max := *definition.ExclusiveMaximum - 1
-					maxValue = &max
-				}
-
-				var minLength *int
-				if definition.MinLength != nil {
-					minLength = definition.MinLength
-				}
-
-				var maxLength *int
-				if definition.MaxLength != nil {
-					maxLength = definition.MaxLength
-				}
-
-				armType, err := toARMType(definition.Type.(string))
-				if err != nil {
-					return err
-				}
-
-				generatedTemplate.Parameters[parameterKey] = template.Parameter{
-					Type:          armType,
-					AllowedValues: allowedValues,
-					DefaultValue:  defaultValue,
-					Metadata:      &metadata,
-					MinValue:      minValue,
-					MaxValue:      maxValue,
-					MinLength:     minLength,
-					MaxLength:     maxLength,
+			var metadata template.Metadata
+			if definition.Description != "" {
+				metadata = template.Metadata{
+					Description: definition.Description,
 				}
 			}
 
-			paramEnvVar = template.EnvironmentVariable{
-				Name:  common.GetEnvironmentVariableNames().CnabParameterPrefix + parameterKey,
-				Value: fmt.Sprintf("[parameters('%s')]", parameterKey),
+			var allowedValues interface{}
+			if definition.Enum != nil {
+				allowedValues = definition.Enum
 			}
+
+			var defaultValue interface{}
+			if definition.Default != nil {
+				defaultValue = definition.Default
+			} else {
+				if !parameter.Required {
+					defaultValue = ""
+				}
+			}
+
+			var minValue *int
+			if definition.Minimum != nil {
+				minValue = definition.Minimum
+			}
+			if definition.ExclusiveMinimum != nil {
+				min := *definition.ExclusiveMinimum + 1
+				minValue = &min
+			}
+
+			var maxValue *int
+			if definition.Maximum != nil {
+				maxValue = definition.Maximum
+			}
+			if definition.ExclusiveMaximum != nil {
+				max := *definition.ExclusiveMaximum - 1
+				maxValue = &max
+			}
+
+			var minLength *int
+			if definition.MinLength != nil {
+				minLength = definition.MinLength
+			}
+
+			var maxLength *int
+			if definition.MaxLength != nil {
+				maxLength = definition.MaxLength
+			}
+
+			armType, err := toARMType(definition.Type.(string))
+			if err != nil {
+				return err
+			}
+
+			generatedTemplate.Parameters[parameterKey] = template.Parameter{
+				Type:          armType,
+				AllowedValues: allowedValues,
+				DefaultValue:  defaultValue,
+				Metadata:      &metadata,
+				MinValue:      minValue,
+				MaxValue:      maxValue,
+				MinLength:     minLength,
+				MaxLength:     maxLength,
+			}
+		}
+
+		paramEnvVar = template.EnvironmentVariable{
+			Name:  common.GetEnvironmentVariableNames().CnabParameterPrefix + parameterKey,
+			Value: fmt.Sprintf("[parameters('%s')]", parameterKey),
 		}
 
 		if err = generatedTemplate.SetContainerEnvironmentVariable(paramEnvVar); err != nil {
