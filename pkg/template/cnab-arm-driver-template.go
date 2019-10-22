@@ -1,6 +1,10 @@
 package template
 
-import "github.com/endjin/CNAB.ARM-Converter/pkg/common"
+import (
+	"fmt"
+
+	"github.com/endjin/CNAB.ARM-Converter/pkg/common"
+)
 
 const (
 	//CnabArmDriverImageName is the image name for the docker image that runs the ARM driver
@@ -8,7 +12,7 @@ const (
 )
 
 // NewCnabArmDriverTemplate creates a new instance of Template for running a CNAB bundle using cnab-azure-driver
-func NewCnabArmDriverTemplate(bundleName string, containerImageName string, containerImageVersion string, simplify bool) Template {
+func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImageName string, containerImageVersion string, simplify bool) Template {
 
 	resources := []Resource{
 		{
@@ -99,6 +103,14 @@ func NewCnabArmDriverTemplate(bundleName string, containerImageName string, cont
 								{
 									Name:  "VERBOSE",
 									Value: "false",
+								},
+								{
+									Name:  common.GetEnvironmentVariableNames().CnabBundleName,
+									Value: bundleName,
+								},
+								{
+									Name:  common.GetEnvironmentVariableNames().CnabBundleTag,
+									Value: bundleTag,
 								},
 							},
 						},
@@ -283,7 +295,7 @@ func NewCnabArmDriverTemplate(bundleName string, containerImageName string, cont
 	template.setContainerImage(containerImageName, containerImageVersion)
 
 	if simplify {
-		template.addSimpleVariables(bundleName)
+		template.addSimpleVariables(bundleName, bundleTag)
 	} else {
 		template.addAdvancedVariables()
 	}
@@ -312,7 +324,7 @@ func (template *Template) addAdvancedVariables() {
 	template.Variables = variables
 }
 
-func (template *Template) addSimpleVariables(bundleName string) {
+func (template *Template) addSimpleVariables(bundleName string, bundleTag string) {
 	variables := map[string]string{
 		"cnab_action":                               "[parameters('cnab_action')]",
 		"cnab_azure_client_id":                      "[parameters('cnab_azure_client_id')]",
@@ -325,8 +337,8 @@ func (template *Template) addSimpleVariables(bundleName string) {
 		"cnab_state_storage_account_key":            "",
 		"cnab_state_storage_account_name":           "[concat('cnabstate',uniqueString(resourceGroup().id))]",
 		"cnab_state_storage_account_resource_group": "[resourceGroup().name]",
-		"containerGroupName":                        "[concat('cg-',uniqueString(resourceGroup().id, newGuid()))]",
-		"containerName":                             "[concat('cn-',uniqueString(resourceGroup().id, newGuid()))]",
+		"containerGroupName":                        fmt.Sprintf("[concat('cg-',uniqueString(resourceGroup().id, '%s', '%s'))]", bundleName, bundleTag),
+		"containerName":                             fmt.Sprintf("[concat('cn-',uniqueString(resourceGroup().id, '%s', '%s'))]", bundleName, bundleTag),
 		"location":                                  "[resourceGroup().Location]",
 	}
 

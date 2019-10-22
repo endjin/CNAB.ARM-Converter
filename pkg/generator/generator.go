@@ -42,30 +42,15 @@ func GenerateTemplate(options GenerateTemplateOptions) error {
 		return err
 	}
 
-	generatedTemplate := template.NewCnabArmDriverTemplate(bundle.Name, template.CnabArmDriverImageName, options.Version, options.Simplify)
-
 	bundleName := bundle.Name
-	bundleNameEnvVar := template.EnvironmentVariable{
-		Name:  common.GetEnvironmentVariableNames().CnabBundleName,
-		Value: bundleName,
-	}
-
-	if err = generatedTemplate.SetContainerEnvironmentVariable(bundleNameEnvVar); err != nil {
-		return err
-	}
-
 	bundleTag, err := getBundleTag(bundle)
-	if err != nil {
-		return err
-	}
-	bundleTagEnvVar := template.EnvironmentVariable{
-		Name:  common.GetEnvironmentVariableNames().CnabBundleTag,
-		Value: bundleTag,
-	}
 
-	if err = generatedTemplate.SetContainerEnvironmentVariable(bundleTagEnvVar); err != nil {
-		return err
-	}
+	generatedTemplate := template.NewCnabArmDriverTemplate(
+		bundleName,
+		bundleTag,
+		template.CnabArmDriverImageName,
+		options.Version,
+		options.Simplify)
 
 	// Sort parameters, because Go randomizes order when iterating a map
 	var parameterKeys []string

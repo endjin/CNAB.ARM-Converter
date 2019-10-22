@@ -85,8 +85,8 @@
 		"cnab_state_storage_account_key": "",
 		"cnab_state_storage_account_name": "[concat('cnabstate',uniqueString(resourceGroup().id))]",
 		"cnab_state_storage_account_resource_group": "[resourceGroup().name]",
-		"containerGroupName": "[concat('cg-',uniqueString(resourceGroup().id, newGuid()))]",
-		"containerName": "[concat('cn-',uniqueString(resourceGroup().id, newGuid()))]",
+		"containerGroupName": "[concat('cg-',uniqueString(resourceGroup().id, 'hello-world', 'cnabquickstarts.azurecr.io/porter/hello-world/bundle:1.0.0'))]",
+		"containerName": "[concat('cn-',uniqueString(resourceGroup().id, 'hello-world', 'cnabquickstarts.azurecr.io/porter/hello-world/bundle:1.0.0'))]",
 		"location": "[resourceGroup().Location]"
 	},
 	"resources": [
