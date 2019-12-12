@@ -254,9 +254,9 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 		parameters["cnab_azure_state_storage_account_key"] = Parameter{
 			Type: "string",
 			Metadata: &Metadata{
-				Description: "The storage account key for the account for the CNAB state to be stored in, if this is left blank it will be looked up at runtime",
+				Description: "The storage account key for the account for the CNAB state to be stored in.",
 			},
-			DefaultValue: "",
+			DefaultValue: "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('cnab_azure_state_storage_account_name')), '2019-04-01').keys[0].value]",
 		}
 
 		parameters["cnab_azure_state_fileshare"] = Parameter{
@@ -334,7 +334,7 @@ func (template *Template) addSimpleVariables(bundleName string, bundleTag string
 		"cnab_azure_tenant_id":                            "[subscription().tenantId]",
 		"cnab_installation_name":                          bundleName,
 		"cnab_azure_state_fileshare":                      bundleName,
-		"cnab_azure_state_storage_account_key":            "",
+		"cnab_azure_state_storage_account_key":            "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('cnab_azure_state_storage_account_name')), '2019-04-01').keys[0].value]",
 		"cnab_azure_state_storage_account_name":           "[concat('cnabstate',uniqueString(resourceGroup().id))]",
 		"cnab_azure_state_storage_account_resource_group": "[resourceGroup().name]",
 		"containerGroupName":                              fmt.Sprintf("[concat('cg-',uniqueString(resourceGroup().id, '%s', '%s'))]", bundleName, bundleTag),

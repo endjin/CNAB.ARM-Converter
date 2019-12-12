@@ -80,7 +80,7 @@
 		"cnab_azure_client_secret": "[parameters('cnab_azure_client_secret')]",
 		"cnab_azure_location": "[resourceGroup().Location]",
 		"cnab_azure_state_fileshare": "hello-world",
-		"cnab_azure_state_storage_account_key": "",
+		"cnab_azure_state_storage_account_key": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('cnab_azure_state_storage_account_name')), '2019-04-01').keys[0].value]",
 		"cnab_azure_state_storage_account_name": "[concat('cnabstate',uniqueString(resourceGroup().id))]",
 		"cnab_azure_state_storage_account_resource_group": "[resourceGroup().name]",
 		"cnab_azure_subscription_id": "[subscription().subscriptionId]",
