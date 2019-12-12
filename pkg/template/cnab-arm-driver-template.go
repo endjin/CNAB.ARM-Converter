@@ -16,9 +16,9 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 
 	resources := []Resource{
 		{
-			Condition:  "[equals(variables('cnab_state_storage_account_resource_group'),resourceGroup().name)]",
+			Condition:  "[equals(variables('cnab_azure_state_storage_account_resource_group'),resourceGroup().name)]",
 			Type:       "Microsoft.Storage/storageAccounts",
-			Name:       "[variables('cnab_state_storage_account_name')]",
+			Name:       "[variables('cnab_azure_state_storage_account_name')]",
 			APIVersion: "2019-04-01",
 			Location:   "[variables('aci_location')]",
 			Sku: &Sku{
@@ -42,7 +42,7 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 			APIVersion: "2018-10-01",
 			Location:   "[variables('aci_location')]",
 			DependsOn: []string{
-				"[variables('cnab_state_storage_account_name')]",
+				"[variables('cnab_azure_state_storage_account_name')]",
 			},
 			Properties: ContainerGroupProperties{
 				Containers: []Container{
@@ -85,20 +85,20 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 									Value: "[variables('cnab_azure_tenant_id')]",
 								},
 								{
-									Name:  common.GetEnvironmentVariableNames().CnabStateStorageAccountName,
-									Value: "[variables('cnab_state_storage_account_name')]",
+									Name:  common.GetEnvironmentVariableNames().CnabAzureStateStorageAccountName,
+									Value: "[variables('cnab_azure_state_storage_account_name')]",
 								},
 								{
-									Name:        common.GetEnvironmentVariableNames().CnabStateStorageAccountKey,
-									SecureValue: "[variables('cnab_state_storage_account_key')]",
+									Name:        common.GetEnvironmentVariableNames().CnabAzureStateStorageAccountKey,
+									SecureValue: "[variables('cnab_azure_state_storage_account_key')]",
 								},
 								{
-									Name:  common.GetEnvironmentVariableNames().CnabStateStorageAccountResourceGroup,
-									Value: "[variables('cnab_state_storage_account_resource_group')]",
+									Name:  common.GetEnvironmentVariableNames().CnabAzureStateStorageAccountResourceGroup,
+									Value: "[variables('cnab_azure_state_storage_account_resource_group')]",
 								},
 								{
-									Name:  common.GetEnvironmentVariableNames().CnabStateShareName,
-									Value: "[variables('cnab_state_share_name')]",
+									Name:  common.GetEnvironmentVariableNames().CnabAzureStateFileshare,
+									Value: "[variables('cnab_azure_state_fileshare')]",
 								},
 								{
 									Name:  "VERBOSE",
@@ -243,7 +243,7 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 			DefaultValue: "[concat('cn-',uniqueString(resourceGroup().id, newGuid()))]",
 		}
 
-		parameters["cnab_state_storage_account_name"] = Parameter{
+		parameters["cnab_azure_state_storage_account_name"] = Parameter{
 			Type: "string",
 			Metadata: &Metadata{
 				Description: "The storage account name for the account for the CNAB state to be stored in, by default this will be in the current resource group and will be created if it does not exist",
@@ -251,7 +251,7 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 			DefaultValue: "[concat('cnabstate',uniqueString(resourceGroup().id))]",
 		}
 
-		parameters["cnab_state_storage_account_key"] = Parameter{
+		parameters["cnab_azure_state_storage_account_key"] = Parameter{
 			Type: "string",
 			Metadata: &Metadata{
 				Description: "The storage account key for the account for the CNAB state to be stored in, if this is left blank it will be looked up at runtime",
@@ -259,7 +259,7 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 			DefaultValue: "",
 		}
 
-		parameters["cnab_state_share_name"] = Parameter{
+		parameters["cnab_azure_state_fileshare"] = Parameter{
 			Type: "string",
 			Metadata: &Metadata{
 				Description: "The file share name in the storage account for the CNAB state to be stored in",
@@ -267,7 +267,7 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 			DefaultValue: "",
 		}
 
-		parameters["cnab_state_storage_account_resource_group"] = Parameter{
+		parameters["cnab_azure_state_storage_account_resource_group"] = Parameter{
 			Type: "string",
 			Metadata: &Metadata{
 				Description: "The resource group name for the storage account for the CNAB state to be stored in, by default this will be in the current resource group, if this is changed to a different resource group the storage account is expected to already exist",
@@ -305,20 +305,20 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 
 func (template *Template) addAdvancedVariables() {
 	variables := map[string]string{
-		"cnab_action":                               "[parameters('cnab_action')]",
-		"cnab_azure_client_id":                      "[parameters('cnab_azure_client_id')]",
-		"cnab_azure_client_secret":                  "[parameters('cnab_azure_client_secret')]",
-		"cnab_azure_location":                       "[parameters('cnab_azure_location')]",
-		"cnab_azure_subscription_id":                "[parameters('cnab_azure_subscription_id')]",
-		"cnab_azure_tenant_id":                      "[parameters('cnab_azure_tenant_id')]",
-		"cnab_installation_name":                    "[parameters('cnab_installation_name')]",
-		"cnab_state_share_name":                     "[parameters('cnab_state_share_name')]",
-		"cnab_state_storage_account_key":            "[parameters('cnab_state_storage_account_key')]",
-		"cnab_state_storage_account_name":           "[parameters('cnab_state_storage_account_name')]",
-		"cnab_state_storage_account_resource_group": "[parameters('cnab_state_storage_account_resource_group')]",
-		"containerGroupName":                        "[parameters('containerGroupName')]",
-		"containerName":                             "[parameters('containerName')]",
-		"aci_location":                                  "[parameters('aci_location')]",
+		"cnab_action":                                     "[parameters('cnab_action')]",
+		"cnab_azure_client_id":                            "[parameters('cnab_azure_client_id')]",
+		"cnab_azure_client_secret":                        "[parameters('cnab_azure_client_secret')]",
+		"cnab_azure_location":                             "[parameters('cnab_azure_location')]",
+		"cnab_azure_subscription_id":                      "[parameters('cnab_azure_subscription_id')]",
+		"cnab_azure_tenant_id":                            "[parameters('cnab_azure_tenant_id')]",
+		"cnab_installation_name":                          "[parameters('cnab_installation_name')]",
+		"cnab_azure_state_fileshare":                      "[parameters('cnab_azure_state_fileshare')]",
+		"cnab_azure_state_storage_account_key":            "[parameters('cnab_azure_state_storage_account_key')]",
+		"cnab_azure_state_storage_account_name":           "[parameters('cnab_azure_state_storage_account_name')]",
+		"cnab_azure_state_storage_account_resource_group": "[parameters('cnab_azure_state_storage_account_resource_group')]",
+		"containerGroupName":                              "[parameters('containerGroupName')]",
+		"containerName":                                   "[parameters('containerName')]",
+		"aci_location":                                    "[parameters('aci_location')]",
 	}
 
 	template.Variables = variables
@@ -326,20 +326,20 @@ func (template *Template) addAdvancedVariables() {
 
 func (template *Template) addSimpleVariables(bundleName string, bundleTag string) {
 	variables := map[string]string{
-		"cnab_action":                               "[parameters('cnab_action')]",
-		"cnab_azure_client_id":                      "[parameters('cnab_azure_client_id')]",
-		"cnab_azure_client_secret":                  "[parameters('cnab_azure_client_secret')]",
-		"cnab_azure_location":                       "[resourceGroup().Location]",
-		"cnab_azure_subscription_id":                "[subscription().subscriptionId]",
-		"cnab_azure_tenant_id":                      "[subscription().tenantId]",
-		"cnab_installation_name":                    bundleName,
-		"cnab_state_share_name":                     bundleName,
-		"cnab_state_storage_account_key":            "",
-		"cnab_state_storage_account_name":           "[concat('cnabstate',uniqueString(resourceGroup().id))]",
-		"cnab_state_storage_account_resource_group": "[resourceGroup().name]",
-		"containerGroupName":                        fmt.Sprintf("[concat('cg-',uniqueString(resourceGroup().id, '%s', '%s'))]", bundleName, bundleTag),
-		"containerName":                             fmt.Sprintf("[concat('cn-',uniqueString(resourceGroup().id, '%s', '%s'))]", bundleName, bundleTag),
-		"aci_location":                                  "[resourceGroup().Location]",
+		"cnab_action":                                     "[parameters('cnab_action')]",
+		"cnab_azure_client_id":                            "[parameters('cnab_azure_client_id')]",
+		"cnab_azure_client_secret":                        "[parameters('cnab_azure_client_secret')]",
+		"cnab_azure_location":                             "[resourceGroup().Location]",
+		"cnab_azure_subscription_id":                      "[subscription().subscriptionId]",
+		"cnab_azure_tenant_id":                            "[subscription().tenantId]",
+		"cnab_installation_name":                          bundleName,
+		"cnab_azure_state_fileshare":                      bundleName,
+		"cnab_azure_state_storage_account_key":            "",
+		"cnab_azure_state_storage_account_name":           "[concat('cnabstate',uniqueString(resourceGroup().id))]",
+		"cnab_azure_state_storage_account_resource_group": "[resourceGroup().name]",
+		"containerGroupName":                              fmt.Sprintf("[concat('cg-',uniqueString(resourceGroup().id, '%s', '%s'))]", bundleName, bundleTag),
+		"containerName":                                   fmt.Sprintf("[concat('cn-',uniqueString(resourceGroup().id, '%s', '%s'))]", bundleName, bundleTag),
+		"aci_location":                                    "[resourceGroup().Location]",
 	}
 
 	template.Variables = variables
