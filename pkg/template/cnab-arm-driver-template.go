@@ -135,15 +135,13 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 			},
 		},
 		"cnab_azure_client_id": {
-			Type:         "string",
-			DefaultValue: "",
+			Type: "string",
 			Metadata: &Metadata{
 				Description: "AAD Client ID for Azure account authentication - used to authenticate to Azure using Service Principal for ACI creation.",
 			},
 		},
 		"cnab_azure_client_secret": {
-			Type:         "securestring",
-			DefaultValue: "",
+			Type: "securestring",
 			Metadata: &Metadata{
 				Description: "AAD Client Secret for Azure account authentication - used to authenticate to Azure using Service Principal for ACI creation.",
 			},

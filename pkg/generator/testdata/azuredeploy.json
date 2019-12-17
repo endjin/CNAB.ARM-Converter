@@ -60,14 +60,12 @@
 		},
 		"cnab_azure_client_id": {
 			"type": "string",
-			"defaultValue": "",
 			"metadata": {
 				"description": "AAD Client ID for Azure account authentication - used to authenticate to Azure using Service Principal for ACI creation."
 			}
 		},
 		"cnab_azure_client_secret": {
 			"type": "securestring",
-			"defaultValue": "",
 			"metadata": {
 				"description": "AAD Client Secret for Azure account authentication - used to authenticate to Azure using Service Principal for ACI creation."
 			}
