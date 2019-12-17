@@ -98,6 +98,13 @@ func GenerateTemplate(options GenerateTemplateOptions) error {
 			var defaultValue interface{}
 			if definition.Default != nil {
 				defaultValue = definition.Default
+
+				// If value is a string starting with square bracket, then we need to escape it
+				// otherwise ARM thinks it is an expression
+				if v, ok := defaultValue.(string); ok && strings.HasPrefix(v, "[") {
+					v = "[" + v
+					defaultValue = v
+				}
 			} else {
 				if !parameter.Required {
 					defaultValue = ""
