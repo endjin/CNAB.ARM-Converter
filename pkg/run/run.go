@@ -33,19 +33,17 @@ func Run() error {
 	cnabAction := config.cnabAction
 	cnabInstallationName := config.cnabInstallationName
 
-	cnabParams := getCnabParams()
-
 	credsPath, err := generateCredsFile(cnabInstallationName)
 	if err != nil {
 		log.Fatalf("generateCredsFile command failed with %s\n", err)
 	}
 
-	cmdParams := []string{cnabAction, cnabInstallationName, "-d", "azure", "--tag", cnabBundleTag, "--cred", credsPath}
-
-	for i := range cnabParams {
-		cmdParams = append(cmdParams, "--param")
-		cmdParams = append(cmdParams, strings.TrimPrefix(cnabParams[i], common.GetEnvironmentVariableNames().CnabParameterPrefix))
+	paramsPath, err := generateParamsFile(cnabInstallationName)
+	if err != nil {
+		log.Fatalf("generateParamsFile command failed with %s\n", err)
 	}
+
+	cmdParams := []string{cnabAction, cnabInstallationName, "-d", "azure", "--tag", cnabBundleTag, "--cred", credsPath, "--param-file", paramsPath}
 
 	cmd := exec.Command("porter", cmdParams...)
 	log.Println(cmd.String())
@@ -136,7 +134,7 @@ func generateCredsFile(cnabInstallationName string) (string, error) {
 		creds.Credentials = append(creds.Credentials, credentialStrategy)
 	}
 
-	credFileName := cnabInstallationName + ".yaml"
+	credFileName := cnabInstallationName + "-creds.yaml"
 	credPath := path.Join(tempDir, credFileName)
 
 	credData, _ := yaml.Marshal(creds)
@@ -146,6 +144,28 @@ func generateCredsFile(cnabInstallationName string) (string, error) {
 	}
 
 	return credPath, nil
+}
+
+func generateParamsFile(cnabInstallationName string) (string, error) {
+	tempDir, _ := ioutil.TempDir("", "cnabarmdriver")
+
+	cnabParams := getCnabParams()
+
+	paramsFileName := cnabInstallationName + "-params.txt"
+	paramsPath := path.Join(tempDir, paramsFileName)
+
+	var b strings.Builder
+	for i, p := range cnabParams {
+		p = strings.TrimPrefix(cnabParams[i], common.GetEnvironmentVariableNames().CnabParameterPrefix)
+		fmt.Fprintf(&b, "%s\n", p)
+	}
+	paramsData := b.String()
+
+	if err := ioutil.WriteFile(paramsPath, []byte(paramsData), 0644); err != nil {
+		return "", err
+	}
+
+	return paramsPath, nil
 }
 
 func getCnabParams() []string {
