@@ -36,6 +36,15 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 			},
 		},
 		{
+			Type:       "Microsoft.Storage/storageAccounts/blobServices/containers",
+			Name:       "[concat(variables('cnab_azure_state_storage_account_name'), '/default/porter'))]",
+			APIVersion: "2019-04-01",
+			Location:   "[variables('aci_location')]",
+			DependsOn: []string{
+				"[variables('cnab_azure_state_storage_account_name')]",
+			},
+		},
+		{
 			Type:       "Microsoft.Storage/storageAccounts/fileServices/shares",
 			Name:       "[concat(variables('cnab_azure_state_storage_account_name'), '/default/', variables('cnab_azure_state_fileshare'))]",
 			APIVersion: "2019-04-01",
@@ -115,6 +124,10 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 								{
 									Name:  common.GetEnvironmentVariableNames().CnabBundleTag,
 									Value: bundleTag,
+								},
+								{
+									Name:        "AZURE_STORAGE_CONNECTION_STRING",
+									SecureValue: "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('cnab_azure_state_storage_account_name')), '2019-04-01').keys[0].value]",
 								},
 							},
 						},

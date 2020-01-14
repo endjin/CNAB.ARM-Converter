@@ -1,13 +1,19 @@
+# Build Porter Azure plugin (remove this when `porter plugin install` command is implemented - https://github.com/deislabs/porter/issues/771)
+FROM golang:1.13.6
+RUN go get github.com/deislabs/porter-azure-plugins/...
+WORKDIR /go/src/github.com/deislabs/porter-azure-plugins
+RUN make build
+
 FROM alpine:latest
 
 ARG CNAB_ARM_DRIVER_VERSION
 ARG CNAB_ARM_DRIVER_REPO
 
 ENV PORTER_URL=https://cdn.deislabs.io/porter
-ENV PORTER_VERSION=v0.17.1-beta.1
+ENV PORTER_VERSION=v0.22.1-beta.1
 
-ENV CNAB_AZURE_DRIVER_VERSION=v.0.0.3
-ENV CNAB_AZURE_DRIVER_REPO=simongdavies/cnab-azure-driver
+ENV CNAB_AZURE_DRIVER_VERSION=v0.0.4
+ENV CNAB_AZURE_DRIVER_REPO=deislabs/cnab-azure-driver
 
 ENV CNAB_ARM_DRIVER_VERSION=$CNAB_ARM_DRIVER_VERSION
 ENV CNAB_ARM_DRIVER_REPO=$CNAB_ARM_DRIVER_REPO
@@ -31,5 +37,10 @@ RUN chmod +x "${TOOLHOME}/cnab-azure"
 # Install CNAB ARM driver
 RUN curl "https://github.com/${CNAB_ARM_DRIVER_REPO}/releases/download/${CNAB_ARM_DRIVER_VERSION}/cnabarmdriver-linux-amd64" -fLo "${TOOLHOME}/cnabarmdriver"
 RUN chmod +x "${TOOLHOME}/cnabarmdriver"
+
+# Install Porter Azure plugin
+RUN mkdir -p ${PORTER_HOME}/plugins
+COPY --from=0 /go/src/github.com/deislabs/porter-azure-plugins/bin/plugins/azure ${PORTER_HOME}/plugins/
+COPY config.toml ${PORTER_HOME}/
 
 CMD cnabarmdriver
