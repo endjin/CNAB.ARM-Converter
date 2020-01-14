@@ -37,7 +37,7 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 		},
 		{
 			Type:       "Microsoft.Storage/storageAccounts/blobServices/containers",
-			Name:       "[concat(variables('cnab_azure_state_storage_account_name'), '/default/porter'))]",
+			Name:       "[concat(variables('cnab_azure_state_storage_account_name'), '/default/porter')]",
 			APIVersion: "2019-04-01",
 			Location:   "[variables('aci_location')]",
 			DependsOn: []string{

@@ -223,7 +223,7 @@
 		},
 		{
 			"type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-			"name": "[concat(variables('cnab_azure_state_storage_account_name'), '/default/porter'))]",
+			"name": "[concat(variables('cnab_azure_state_storage_account_name'), '/default/porter')]",
 			"apiVersion": "2019-04-01",
 			"location": "[variables('aci_location')]",
 			"dependsOn": [
