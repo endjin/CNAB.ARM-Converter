@@ -21,7 +21,7 @@ ENV CNAB_ARM_DRIVER_REPO=$CNAB_ARM_DRIVER_REPO
 ENV TOOLHOME="/usr/local/bin"
 ENV PORTER_HOME="/usr/local/bin/.porter"
 
-RUN apk add --update curl coreutils && rm -rf /var/cache/apk/*
+RUN apk add --update curl coreutils libc6-compat && rm -rf /var/cache/apk/*
 
 # Install porter 
 
