@@ -316,7 +316,7 @@
 								},
 								{
 									"name": "AZURE_STORAGE_CONNECTION_STRING",
-									"secureValue": "[concat('AccountName=', variables('cnab_azure_state_storage_account_name'), ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('cnab_azure_state_storage_account_name')), '2019-04-01').keys[0].value]"
+									"secureValue": "[concat('AccountName=', variables('cnab_azure_state_storage_account_name'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('cnab_azure_state_storage_account_name')), '2019-04-01').keys[0].value)]"
 								},
 								{
 									"name": "CNAB_PARAM_age",
