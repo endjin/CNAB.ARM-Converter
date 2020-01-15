@@ -127,7 +127,7 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 								},
 								{
 									Name:        "AZURE_STORAGE_CONNECTION_STRING",
-									SecureValue: "[listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('cnab_azure_state_storage_account_name')), '2019-04-01').keys[0].value]",
+									SecureValue: "[concat('AccountName=', variables('cnab_azure_state_storage_account_name'), ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('cnab_azure_state_storage_account_name')), '2019-04-01').keys[0].value]",
 								},
 							},
 						},
