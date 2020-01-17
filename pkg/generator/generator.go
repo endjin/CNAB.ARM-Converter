@@ -44,10 +44,17 @@ func GenerateTemplate(options GenerateTemplateOptions) error {
 
 	bundleName := bundle.Name
 	bundleTag, err := getBundleTag(bundle)
+	bundleActions := make([]string, 0, len(bundle.Actions)+3)
+	defaultActions := []string{"install", "upgrade", "uninstall"}
+	bundleActions = append(bundleActions, defaultActions...)
+	for action := range bundle.Actions {
+		bundleActions = append(bundleActions, action)
+	}
 
 	generatedTemplate := template.NewCnabArmDriverTemplate(
 		bundleName,
 		bundleTag,
+		bundleActions,
 		template.CnabArmDriverImageName,
 		options.Version,
 		options.Simplify)

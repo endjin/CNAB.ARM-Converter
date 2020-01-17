@@ -12,7 +12,7 @@ const (
 )
 
 // NewCnabArmDriverTemplate creates a new instance of Template for running a CNAB bundle using cnab-azure-driver
-func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImageName string, containerImageVersion string, simplify bool) Template {
+func NewCnabArmDriverTemplate(bundleName string, bundleTag string, bundleActions []string, containerImageName string, containerImageVersion string, simplify bool) Template {
 
 	resources := []Resource{
 		{
@@ -141,8 +141,9 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 
 	parameters := map[string]Parameter{
 		"cnab_action": {
-			Type:         "string",
-			DefaultValue: "install",
+			Type:          "string",
+			DefaultValue:  bundleActions[0],
+			AllowedValues: bundleActions,
 			Metadata: &Metadata{
 				Description: "The name of the action to be performed on the application instance.",
 			},

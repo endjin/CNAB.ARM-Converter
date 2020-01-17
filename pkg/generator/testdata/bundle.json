@@ -1,4 +1,9 @@
 {
+    "actions": {
+        "endjin.customAction": {
+            "description": "A custom action"
+        }
+    },
     "credentials": {
         "password": {
             "description": "A secret password",
