@@ -271,7 +271,7 @@ func NewCnabArmDriverTemplate(bundleName string, bundleTag string, containerImag
 			Metadata: &Metadata{
 				Description: "The file share name in the storage account for the CNAB state to be stored in",
 			},
-			DefaultValue: "",
+			DefaultValue: bundleName,
 		}
 
 	}
