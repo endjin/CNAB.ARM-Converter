@@ -42,7 +42,8 @@
             "description": "The name of the person to say hello to",
             "maxLength": 20,
             "minLength": 1,
-            "type": "string"
+            "type": "string",
+            "writeOnly": true
         },
         "place_of_birth": {
             "description": "The person's place of birth",

@@ -159,7 +159,7 @@
 			}
 		},
 		"person": {
-			"type": "string",
+			"type": "securestring",
 			"defaultValue": "mike",
 			"metadata": {
 				"description": "The name of the person to say hello to"

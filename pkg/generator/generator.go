@@ -146,7 +146,12 @@ func GenerateTemplate(options GenerateTemplateOptions) error {
 				maxLength = definition.MaxLength
 			}
 
-			armType, err := toARMType(definition.Type.(string))
+			isSensitive := false
+			if definition.WriteOnly != nil && *definition.WriteOnly {
+				isSensitive = true
+			}
+
+			armType, err := toARMType(definition.Type.(string), isSensitive)
 			if err != nil {
 				return err
 			}
@@ -292,17 +297,27 @@ func getBundleTag(bundle *bundle.Bundle) (string, error) {
 	return "", fmt.Errorf("Cannot get bundle name from invocationImages: %v", bundle.InvocationImages)
 }
 
-func toARMType(jsonType string) (string, error) {
+func toARMType(jsonType string, isSensitive bool) (string, error) {
 	var armType string
 	var err error
 
 	switch jsonType {
 	case "boolean":
 		armType = "bool"
+		break
 	case "integer":
 		armType = "int"
-	case "object", "array", "string":
+		break
+	case "string":
+		if isSensitive {
+			armType = "securestring"
+		} else {
+			armType = "string"
+		}
+		break
+	case "object", "array":
 		armType = jsonType
+		break
 	default:
 		err = fmt.Errorf("Unable to convert type '%s' to ARM template parameter type", jsonType)
 	}
