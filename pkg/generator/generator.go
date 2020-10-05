@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -75,6 +76,12 @@ func GenerateTemplate(options GenerateTemplateOptions) error {
 
 		// porter-debug is added automatically so can only be modified by updating porter
 		if parameterKey == "porter-debug" {
+			continue
+		}
+
+		// porter-*-output parameters are added automatically and should not be manually edited
+		match, _ := regexp.MatchString("porter-(.*)-output", parameterKey)
+		if match {
 			continue
 		}
 

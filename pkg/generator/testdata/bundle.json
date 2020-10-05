@@ -58,6 +58,10 @@
             "description": "Print debug information from Porter when executing the bundle",
             "type": "boolean"
         },
+        "porter-message-output": {
+            "description": "Wires up the message output for use as a parameter. Porter internal parameter that should not be set manually.",
+            "type": "string"
+        },
         "retirement_age": {
             "description": "The retirement age of the person",
             "exclusiveMaximum": 75,
@@ -108,6 +112,13 @@
             "description": "Print debug information from Porter when executing the bundle",
             "destination": {
                 "env": "PORTER_DEBUG"
+            }
+        },
+        "porter-message-output": {
+            "definition": "porter-message-output",
+            "description": "Wires up the message output for use as a parameter. Porter internal parameter that should not be set manually.",
+            "destination": {
+                "env": "PORTER_MESSAGE_OUTPUT"
             }
         },
         "retirement_age": {
