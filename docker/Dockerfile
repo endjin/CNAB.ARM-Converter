@@ -1,7 +1,7 @@
 # Build Porter Azure plugin (remove this when `porter plugin install` command is implemented - https://github.com/deislabs/porter/issues/771)
 FROM golang:1.13.6
-RUN go get github.com/deislabs/porter-azure-plugins/...
-WORKDIR /go/src/github.com/deislabs/porter-azure-plugins
+RUN go get -d get.porter.sh/plugin/azure/cmd/azure
+WORKDIR /go/src/get.porter.sh/plugin/azure
 RUN make build
 
 FROM alpine:latest
@@ -40,7 +40,7 @@ RUN chmod +x "${TOOLHOME}/cnabarmdriver"
 
 # Install Porter Azure plugin
 RUN mkdir -p ${PORTER_HOME}/plugins
-COPY --from=0 /go/src/github.com/deislabs/porter-azure-plugins/bin/plugins/azure ${PORTER_HOME}/plugins/
+COPY --from=0 /go/src/get.porter.sh/plugin/azure/bin/plugins/azure ${PORTER_HOME}/plugins/
 COPY config.toml ${PORTER_HOME}/
 
 CMD cnabarmdriver
