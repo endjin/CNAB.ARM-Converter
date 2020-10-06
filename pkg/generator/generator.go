@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/deislabs/cnab-go/bundle"
-	"github.com/docker/distribution/reference"
 	"github.com/endjin/CNAB.ARM-Converter/pkg/common"
 	"github.com/endjin/CNAB.ARM-Converter/pkg/template"
 )
@@ -22,6 +21,7 @@ const (
 // GenerateTemplateOptions is the set of options for configuring GenerateTemplate
 type GenerateTemplateOptions struct {
 	BundleLoc  string
+	BundleTag  string
 	OutputFile string
 	Overwrite  bool
 	Indent     bool
@@ -44,7 +44,7 @@ func GenerateTemplate(options GenerateTemplateOptions) error {
 	}
 
 	bundleName := bundle.Name
-	bundleTag, err := getBundleTag(bundle)
+	bundleTag := options.BundleTag
 	bundleActions := make([]string, 0, len(bundle.Actions)+3)
 	defaultActions := []string{"install", "upgrade", "uninstall"}
 	bundleActions = append(bundleActions, defaultActions...)
@@ -275,33 +275,6 @@ func isCnabParam(parameterKey string, template template.Template) (string, bool)
 	}
 
 	return "", false
-}
-
-func getBundleTag(bundle *bundle.Bundle) (string, error) {
-	for _, i := range bundle.InvocationImages {
-		if i.ImageType == "docker" {
-			ref, err := reference.ParseNamed(i.Image)
-			if err != nil {
-				return "", fmt.Errorf("Cannot parse invocationImage reference: %s", i.Image)
-			}
-
-			bundleTag := ref.Name() + "/bundle"
-
-			if tagged, ok := ref.(reference.Tagged); ok {
-				bundleTag += ":"
-				bundleTag += tagged.Tag()
-			}
-
-			if digested, ok := ref.(reference.Digested); ok {
-				bundleTag += "@"
-				bundleTag += digested.Digest().String()
-			}
-
-			return bundleTag, nil
-		}
-	}
-
-	return "", fmt.Errorf("Cannot get bundle name from invocationImages: %v", bundle.InvocationImages)
 }
 
 func toARMType(jsonType string, isSensitive bool) (string, error) {

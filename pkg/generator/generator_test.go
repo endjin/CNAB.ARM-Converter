@@ -18,6 +18,7 @@ func TestGenerateTemplate(t *testing.T) {
 
 	options := GenerateTemplateOptions{
 		BundleLoc:  bundlePath,
+		BundleTag:  "cnabquickstarts.azurecr.io/porter/hello-world/bundle:1.0.0",
 		Indent:     true,
 		OutputFile: generatedOutputPath,
 		Overwrite:  true,
@@ -54,6 +55,7 @@ func TestGenerateSimpleTemplate(t *testing.T) {
 
 	options := GenerateTemplateOptions{
 		BundleLoc:  bundlePath,
+		BundleTag:  "cnabquickstarts.azurecr.io/porter/hello-world/bundle:1.0.0",
 		Indent:     true,
 		OutputFile: generatedOutputPath,
 		Overwrite:  true,
