@@ -42,7 +42,7 @@ jobs:
         cd $GOPROJECT
         make bootstrap test build-release
     - name: Upload build artifacts
-      uses: actions/upload-artifact@master
+      uses: actions/upload-artifact@v1
       with:
         name: binaries
         path: ${{ runner.workspace }}/go/src/github.com/${{ github.repository}}/bin
@@ -52,8 +52,8 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - uses: actions/download-artifact@master
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v1
         with:
           name: binaries
       - name: Create GitHub Release
@@ -63,7 +63,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Authenticate against Azure Container Registry (docker registry)
-        uses: azure/container-actions/docker-login@master
+        uses: azure/docker-login@v1
         with:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
