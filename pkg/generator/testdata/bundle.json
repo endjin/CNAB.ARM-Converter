@@ -72,7 +72,7 @@
     "description": "An example Porter configuration",
     "invocationImages": [
         {
-            "image": "cnabquickstarts.azurecr.io/porter/hello-world:1.0.0",
+            "image": "cnabquickstarts.azurecr.io/porter/hello-world/bundle-installer:1.0.0",
             "imageType": "docker"
         }
     ],

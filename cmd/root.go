@@ -13,6 +13,7 @@ import (
 var Version string
 
 var bundleloc string
+var bundleTag string
 var outputloc string
 var overwrite bool
 var indent bool
@@ -43,11 +44,12 @@ var generateCmd = &cobra.Command{
 
 		options := generator.GenerateTemplateOptions{
 			BundleLoc:  bundleloc,
+			BundleTag:  bundleTag,
 			Indent:     indent,
 			OutputFile: outputloc,
 			Overwrite:  overwrite,
 			Version:    Version,
-			Simplify:	simplify,
+			Simplify:   simplify,
 		}
 
 		return generator.GenerateTemplate(options)
@@ -55,7 +57,9 @@ var generateCmd = &cobra.Command{
 }
 
 func init() {
-	generateCmd.Flags().StringVarP(&bundleloc, "bundle", "b", "bundle.json", "name of bundle file to generate template for , default is bundle.json")
+	generateCmd.Flags().StringVarP(&bundleloc, "bundle", "b", "bundle.json", "name of bundle file to generate template for, default is bundle.json")
+	generateCmd.Flags().StringVarP(&bundleTag, "bundleTag", "t", "", "the tag for the bundle, e.g. cnabquickstarts.azurecr.io/porter/foo/bundle:0.1.0")
+	generateCmd.MarkFlagRequired("bundleTag")
 	generateCmd.Flags().StringVarP(&outputloc, "file", "f", "azuredeploy.json", "file name for generated template,default is azuredeploy.json")
 	generateCmd.Flags().BoolVarP(&overwrite, "overwrite", "o", false, "specifies if to overwrite the output file if it already exists, default is false")
 	generateCmd.Flags().BoolVarP(&indent, "indent", "i", false, "specifies if the json output should be indented")
