@@ -67,14 +67,6 @@ GOLANGCI_VERSION := v1.16.0
 
 .PHONY: bootstrap
 bootstrap:
-ifndef HAS_DEP
-ifeq ($(OS),Windows_NT)
-	choco install dep -y
-else
-	curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-endif
-endif
-
 ifndef HAS_GOLANGCI
 ifeq ($(OS),Windows_NT)
 	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
@@ -86,5 +78,3 @@ endif
 ifeq ($(OS),Windows_NT)
 	choco install diffutils -y
 endif
-
-	dep ensure -vendor-only -v
