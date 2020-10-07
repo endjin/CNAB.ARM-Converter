@@ -44,6 +44,21 @@ func Run() error {
 	cnabAction := config.cnabAction
 	cnabInstallationName := config.cnabInstallationName
 
+	cmdParams := buildPorterCommandParams(cnabInstallationName, cnabAction, cnabBundleTag)
+
+	cmd := exec.Command("porter", cmdParams...)
+	log.Println(cmd.String())
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err = cmd.Run()
+	if err != nil {
+		log.Fatalf("porter command failed with %s\n", err)
+	}
+
+	return nil
+}
+
+func buildPorterCommandParams(cnabInstallationName string, cnabAction string, cnabBundleTag string) []string {
 	credsPath, err := generateCredsFile(cnabInstallationName)
 	if err != nil {
 		log.Fatalf("generateCredsFile command failed with %s\n", err)
@@ -56,16 +71,7 @@ func Run() error {
 
 	cmdParams := []string{cnabAction, cnabInstallationName, "-d", "azure", "--tag", cnabBundleTag, "--cred", credsPath, "--parameter-set", paramsPath}
 
-	cmd := exec.Command("porter", cmdParams...)
-	log.Println(cmd.String())
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	err = cmd.Run()
-	if err != nil {
-		log.Fatalf("porter command failed with %s\n", err)
-	}
-
-	return nil
+	return cmdParams
 }
 
 func getConfig() (config, error) {
@@ -178,6 +184,7 @@ func generateParamsFile(cnabInstallationName string) (string, error) {
 		params.Parameters = append(params.Parameters, valuesource.Strategy{
 			Name: key,
 			Source: valuesource.Source{
+				Key:   "value",
 				Value: os.Getenv(envVar),
 			},
 		})
