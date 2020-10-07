@@ -138,7 +138,7 @@ func generateCredsFile(cnabInstallationName string) (string, error) {
 			cred = valuesource.Strategy{
 				Name: key,
 				Source: valuesource.Source{
-					Key:   "envvar",
+					Key:   "env",
 					Value: envVar,
 				},
 			}
