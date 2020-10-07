@@ -10,8 +10,9 @@ import (
 	"os/exec"
 	"path"
 	"strings"
+	"time"
 
-	"get.porter.sh/porter/pkg/parameters"
+	"github.com/cnabio/cnab-go/schema"
 	"github.com/cnabio/cnab-go/valuesource"
 	"github.com/deislabs/cnab-go/credentials"
 	"github.com/endjin/CNAB.ARM-Converter/pkg/common"
@@ -21,6 +22,14 @@ type config struct {
 	cnabBundleTag        string
 	cnabAction           string
 	cnabInstallationName string
+}
+
+type parameterSet struct {
+	SchemaVersion schema.Version         `json:"schemaVersion" yaml:"schemaVersion"`
+	Name          string                 `json:"name" yaml:"name"`
+	Created       time.Time              `json:"created" yaml:"created"`
+	Modified      time.Time              `json:"modified" yaml:"modified"`
+	Parameters    []valuesource.Strategy `json:"parameters" yaml:"parameters"`
 }
 
 //Run runs Porter with the Azure driver, using environment variables
@@ -156,15 +165,15 @@ func generateParamsFile(cnabInstallationName string) (string, error) {
 	paramsFileName := cnabInstallationName + "-params.json"
 	paramsPath := path.Join(tempDir, paramsFileName)
 
-	params := parameters.ParameterSet{
+	params := parameterSet{
 		Name: cnabInstallationName,
 	}
 
 	for _, cnabParam := range cnabParams {
 		splits := strings.Split(cnabParam, "=")
 		envVar := splits[0]
-		key = strings.TrimPrefix(envVar, common.GetEnvironmentVariableNames().CnabParameterPrefix)
-		params.parameters = append(valuesource.Strategy{
+		key := strings.TrimPrefix(envVar, common.GetEnvironmentVariableNames().CnabParameterPrefix)
+		params.Parameters = append(params.Parameters, valuesource.Strategy{
 			Name: key,
 			Source: valuesource.Source{
 				Value: os.Getenv(envVar),
