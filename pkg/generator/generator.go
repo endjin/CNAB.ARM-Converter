@@ -9,7 +9,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/deislabs/cnab-go/bundle"
+	"github.com/cnabio/cnab-go/bundle"
 	"github.com/endjin/CNAB.ARM-Converter/pkg/common"
 	"github.com/endjin/CNAB.ARM-Converter/pkg/template"
 )
