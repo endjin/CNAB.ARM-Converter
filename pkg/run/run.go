@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cnabio/cnab-go/credentials"
 	"github.com/cnabio/cnab-go/schema"
 	"github.com/cnabio/cnab-go/valuesource"
-	"github.com/deislabs/cnab-go/credentials"
 	"github.com/endjin/CNAB.ARM-Converter/pkg/common"
 )
 
@@ -112,7 +112,7 @@ func generateCredsFile(cnabInstallationName string) (string, error) {
 		envVar := splits[0]
 
 		var key string
-		var credentialStrategy credentials.CredentialStrategy
+		var cred valuesource.Strategy
 		if strings.HasPrefix(envVar, common.GetEnvironmentVariableNames().CnabCredentialFilePrefix) {
 			key = strings.TrimPrefix(envVar, common.GetEnvironmentVariableNames().CnabCredentialFilePrefix)
 
@@ -126,23 +126,25 @@ func generateCredsFile(cnabInstallationName string) (string, error) {
 				return "", err
 			}
 
-			credentialStrategy = credentials.CredentialStrategy{
+			cred = valuesource.Strategy{
 				Name: key,
-				Source: credentials.Source{
-					Path: path,
+				Source: valuesource.Source{
+					Key:   "path",
+					Value: path,
 				},
 			}
 		} else {
 			key = strings.TrimPrefix(envVar, common.GetEnvironmentVariableNames().CnabCredentialPrefix)
-			credentialStrategy = credentials.CredentialStrategy{
+			cred = valuesource.Strategy{
 				Name: key,
-				Source: credentials.Source{
-					EnvVar: envVar,
+				Source: valuesource.Source{
+					Key:   "envvar",
+					Value: envVar,
 				},
 			}
 		}
 
-		creds.Credentials = append(creds.Credentials, credentialStrategy)
+		creds.Credentials = append(creds.Credentials, cred)
 	}
 
 	credFileName := cnabInstallationName + "-creds.json"
