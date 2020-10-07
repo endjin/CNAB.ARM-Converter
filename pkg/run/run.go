@@ -2,6 +2,7 @@ package run
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -10,9 +11,10 @@ import (
 	"path"
 	"strings"
 
+	"get.porter.sh/porter/pkg/parameters"
+	"github.com/cnabio/cnab-go/valuesource"
 	"github.com/deislabs/cnab-go/credentials"
 	"github.com/endjin/CNAB.ARM-Converter/pkg/common"
-	"gopkg.in/yaml.v2"
 )
 
 type config struct {
@@ -43,7 +45,7 @@ func Run() error {
 		log.Fatalf("generateParamsFile command failed with %s\n", err)
 	}
 
-	cmdParams := []string{cnabAction, cnabInstallationName, "-d", "azure", "--tag", cnabBundleTag, "--cred", credsPath, "--param-file", paramsPath}
+	cmdParams := []string{cnabAction, cnabInstallationName, "-d", "azure", "--tag", cnabBundleTag, "--cred", credsPath, "--parameter-set", paramsPath}
 
 	cmd := exec.Command("porter", cmdParams...)
 	log.Println(cmd.String())
@@ -134,10 +136,10 @@ func generateCredsFile(cnabInstallationName string) (string, error) {
 		creds.Credentials = append(creds.Credentials, credentialStrategy)
 	}
 
-	credFileName := cnabInstallationName + "-creds.yaml"
+	credFileName := cnabInstallationName + "-creds.json"
 	credPath := path.Join(tempDir, credFileName)
 
-	credData, _ := yaml.Marshal(creds)
+	credData, _ := json.Marshal(creds)
 
 	if err := ioutil.WriteFile(credPath, credData, 0644); err != nil {
 		return "", err
@@ -151,15 +153,25 @@ func generateParamsFile(cnabInstallationName string) (string, error) {
 
 	cnabParams := getCnabParams()
 
-	paramsFileName := cnabInstallationName + "-params.txt"
+	paramsFileName := cnabInstallationName + "-params.json"
 	paramsPath := path.Join(tempDir, paramsFileName)
 
-	var b strings.Builder
-	for i, p := range cnabParams {
-		p = strings.TrimPrefix(cnabParams[i], common.GetEnvironmentVariableNames().CnabParameterPrefix)
-		fmt.Fprintf(&b, "%s\n", p)
+	params := parameters.ParameterSet{
+		Name: cnabInstallationName,
 	}
-	paramsData := b.String()
+
+	for _, cnabParam := range cnabParams {
+		splits := strings.Split(cnabParam, "=")
+		envVar := splits[0]
+		key = strings.TrimPrefix(envVar, common.GetEnvironmentVariableNames().CnabParameterPrefix)
+		params.parameters = append(valuesource.Strategy{
+			Name: key,
+			Source: valuesource.Source{
+				Value: os.Getenv(envVar),
+			},
+		})
+	}
+	paramsData, _ := json.Marshal(params)
 
 	if err := ioutil.WriteFile(paramsPath, []byte(paramsData), 0644); err != nil {
 		return "", err
