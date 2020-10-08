@@ -35,6 +35,9 @@ type parameterSet struct {
 //Run runs Porter with the Azure driver, using environment variables
 func Run() error {
 
+	// Hack to get around issue with Porter not liking an empty blob container without a schema file in
+	uploadSchema()
+
 	config, err := getConfig()
 	if err != nil {
 		log.Fatalf("%s\n", err)
@@ -56,6 +59,21 @@ func Run() error {
 	}
 
 	return nil
+}
+
+func uploadSchema() {
+	tempDir, _ := ioutil.TempDir("", "cnabarmdriver")
+	schemaFilePath := path.Join(tempDir, "schema")
+	schemaFile := `{"claims":"cnab-claim-1.0.0-DRAFT+b5ed2f3","credentials":"cnab-credentialsets-1.0.0-DRAFT+b6c701f","parameters":"cnab-parametersets-1.0.0-DRAFT+TODO"}`
+	ioutil.WriteFile(schemaFilePath, []byte(schemaFile), 0644)
+	cmd := exec.Command("az", "storage", "blob", "upload", "--connection-string", os.Getenv("AZURE_STORAGE_CONNECTION_STRING"), "--container-name", "porter", "--name", "schema", "--file", schemaFilePath)
+	log.Println(cmd.String())
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	if err != nil {
+		log.Fatalf("porter command failed with %s\n", err)
+	}
 }
 
 func buildPorterCommandParams(cnabInstallationName string, cnabAction string, cnabBundleTag string) []string {

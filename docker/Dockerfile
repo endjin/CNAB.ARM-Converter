@@ -18,7 +18,13 @@ ENV TOOLHOME="/usr/local/bin"
 ENV PORTER_HOME="${TOOLHOME}/.porter"
 ENV PATH=$PATH:$PORTER_HOME
 
-RUN apk add --update curl coreutils libc6-compat && rm -rf /var/cache/apk/*
+# TODO: remove 'make bash py-pip' when porter storage issue is fixed
+RUN apk add --update make bash py-pip curl coreutils libc6-compat && rm -rf /var/cache/apk/*
+
+# Install az cli (TODO: remove when porter storage issue is fixed)
+RUN apk add --virtual=build gcc libffi-dev musl-dev openssl-dev python3-dev \
+    && pip install azure-cli \
+    && apk del --purge build
 
 # Install porter 
 RUN mkdir -p $PORTER_HOME \
